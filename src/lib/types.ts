@@ -1,6 +1,7 @@
 export type Product = {
   id: string;
   name: string;
+  code: string | null;
   caption: string | null;
   price: number;
   cost_price: number | null;

@@ -58,6 +58,7 @@ export async function createProduct(formData: FormData) {
 
   const { error } = await supabase.from("products").insert({
     name: String(formData.get("name") ?? "").trim(),
+    code: String(formData.get("code") ?? "").trim() || null,
     caption: String(formData.get("caption") ?? "").trim() || null,
     price: parsePrice(formData.get("price")),
     cost_price: formData.get("cost_price")
@@ -81,6 +82,7 @@ export async function updateProduct(id: string, formData: FormData) {
 
   const update: Record<string, unknown> = {
     name: String(formData.get("name") ?? "").trim(),
+    code: String(formData.get("code") ?? "").trim() || null,
     caption: String(formData.get("caption") ?? "").trim() || null,
     price: parsePrice(formData.get("price")),
     cost_price: formData.get("cost_price")

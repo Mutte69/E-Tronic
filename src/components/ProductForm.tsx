@@ -82,6 +82,19 @@ export default function ProductForm({
       </div>
 
       <div>
+        <label className="block font-body text-xs text-muted mb-1" htmlFor="code">
+          Item code <span className="text-muted">(optional — helps you find it fast later)</span>
+        </label>
+        <input
+          id="code"
+          name="code"
+          defaultValue={product?.code ?? ""}
+          placeholder="e.g. MTR-01"
+          className="w-full rounded-md bg-surface-raised border border-line px-3 py-2 font-mono text-sm text-paper placeholder:text-muted/50 focus:border-copper outline-none"
+        />
+      </div>
+
+      <div>
         <label className="block font-body text-xs text-muted mb-1" htmlFor="caption">
           Short description <span className="text-muted">(optional)</span>
         </label>

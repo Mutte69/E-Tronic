@@ -58,7 +58,12 @@ export default async function AdminDashboard() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className="font-body text-sm text-paper truncate">{p.name}</p>
+                  <p className="font-body text-sm text-paper truncate">
+                    {p.name}
+                    {p.code && (
+                      <span className="font-mono text-[10px] text-muted ml-2">{p.code}</span>
+                    )}
+                  </p>
                   <p className="font-mono text-xs text-copper-bright">
                     MVR {p.price.toFixed(2)}
                     {p.cost_price != null && (

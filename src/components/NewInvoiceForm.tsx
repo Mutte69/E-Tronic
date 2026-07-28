@@ -1,26 +1,78 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { createInvoice } from "@/app/admin/actions";
 import SubmitButton from "@/components/SubmitButton";
+import type { Product } from "@/lib/types";
 
-type Line = { name: string; price: string; cost_price: string; qty: string };
+type Line = {
+  name: string;
+  price: string;
+  cost_price: string;
+  qty: string;
+  product_id: string | null;
+};
 
-export default function NewInvoiceForm() {
-  const [lines, setLines] = useState<Line[]>([
-    { name: "", price: "", cost_price: "", qty: "1" },
-  ]);
+const emptyLine = (): Line => ({
+  name: "",
+  price: "",
+  cost_price: "",
+  qty: "1",
+  product_id: null,
+});
+
+export default function NewInvoiceForm({ products }: { products: Product[] }) {
+  const [lines, setLines] = useState<Line[]>([emptyLine()]);
+  const [search, setSearch] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  const matches = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return [];
+    return products
+      .filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          (p.code && p.code.toLowerCase().includes(q))
+      )
+      .slice(0, 8);
+  }, [search, products]);
 
   function updateLine(i: number, patch: Partial<Line>) {
     setLines((prev) => prev.map((l, idx) => (idx === i ? { ...l, ...patch } : l)));
   }
 
   function addLine() {
-    setLines((prev) => [...prev, { name: "", price: "", cost_price: "", qty: "1" }]);
+    setLines((prev) => [...prev, emptyLine()]);
   }
 
   function removeLine(i: number) {
     setLines((prev) => prev.filter((_, idx) => idx !== i));
+  }
+
+  function addProduct(product: Product) {
+    setLines((prev) => {
+      const existingIdx = prev.findIndex((l) => l.product_id === product.id);
+      if (existingIdx !== -1) {
+        return prev.map((l, idx) =>
+          idx === existingIdx ? { ...l, qty: String((parseInt(l.qty, 10) || 0) + 1) } : l
+        );
+      }
+      const blankIdx = prev.findIndex((l) => !l.name.trim());
+      const newLine: Line = {
+        name: product.name,
+        price: String(product.price),
+        cost_price: product.cost_price != null ? String(product.cost_price) : "",
+        qty: "1",
+        product_id: product.id,
+      };
+      if (blankIdx !== -1) {
+        return prev.map((l, idx) => (idx === blankIdx ? newLine : l));
+      }
+      return [...prev, newLine];
+    });
+    setSearch("");
+    setSearchOpen(false);
   }
 
   const itemsJson = JSON.stringify(
@@ -78,13 +130,56 @@ export default function NewInvoiceForm() {
           Items
         </legend>
 
-        <div className="space-y-2">
+        {products.length > 0 && (
+          <div className="relative">
+            <label className="block font-body text-xs text-muted mb-1">
+              Find a product
+            </label>
+            <input
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setSearchOpen(true);
+              }}
+              onFocus={() => setSearchOpen(true)}
+              onBlur={() => setTimeout(() => setSearchOpen(false), 150)}
+              placeholder="Type a name or code…"
+              className="w-full rounded-md bg-surface-raised border border-line px-3 py-2 font-body text-sm text-paper placeholder:text-muted/50 focus:border-copper outline-none"
+            />
+            {searchOpen && matches.length > 0 && (
+              <div className="absolute z-10 mt-1 w-full rounded-md border border-line bg-surface shadow-lg overflow-hidden">
+                {matches.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onMouseDown={() => addProduct(p)}
+                    className="w-full flex items-center justify-between gap-3 px-3 py-2 text-left hover:bg-surface-raised transition-colors"
+                  >
+                    <span className="min-w-0">
+                      <span className="font-body text-sm text-paper block truncate">
+                        {p.name}
+                      </span>
+                      {p.code && (
+                        <span className="font-mono text-[10px] text-muted">{p.code}</span>
+                      )}
+                    </span>
+                    <span className="font-mono text-xs text-copper-bright shrink-0">
+                      MVR {p.price.toFixed(2)}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="space-y-2 pt-2">
           {lines.map((line, i) => (
             <div key={i} className="grid grid-cols-12 gap-2 items-center">
               <input
                 placeholder="Item"
                 value={line.name}
-                onChange={(e) => updateLine(i, { name: e.target.value })}
+                onChange={(e) => updateLine(i, { name: e.target.value, product_id: null })}
                 className="col-span-5 rounded-md bg-surface-raised border border-line px-2 py-1.5 font-body text-sm text-paper focus:border-copper outline-none"
               />
               <input
@@ -127,7 +222,7 @@ export default function NewInvoiceForm() {
           onClick={addLine}
           className="font-mono text-xs text-copper-bright hover:text-copper transition-colors"
         >
-          + Add line
+          + Add custom line
         </button>
       </fieldset>
 

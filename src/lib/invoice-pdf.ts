@@ -220,31 +220,27 @@ export async function downloadInvoicePdf(invoice: Invoice, settings: Settings | 
     y += 16;
 
     if (settings?.bml_account_number) {
+      const label = `BML${settings.bml_account_name ? ` — ${settings.bml_account_name}` : ""}`;
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
       doc.setTextColor(...INK);
-      doc.text(
-        `BML${settings.bml_account_name ? ` — ${settings.bml_account_name}` : ""}`,
-        margin,
-        y
-      );
+      doc.text(label, margin, y);
+      const labelW = doc.getTextWidth(label);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(...MUTED);
-      doc.text(settings.bml_account_number, margin + 200, y);
+      doc.text(settings.bml_account_number, margin + labelW + 14, y);
       y += 15;
     }
     if (settings?.mib_account_number) {
+      const label = `MIB${settings.mib_account_name ? ` — ${settings.mib_account_name}` : ""}`;
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
       doc.setTextColor(...INK);
-      doc.text(
-        `MIB${settings.mib_account_name ? ` — ${settings.mib_account_name}` : ""}`,
-        margin,
-        y
-      );
+      doc.text(label, margin, y);
+      const labelW = doc.getTextWidth(label);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(...MUTED);
-      doc.text(settings.mib_account_number, margin + 200, y);
+      doc.text(settings.mib_account_number, margin + labelW + 14, y);
       y += 15;
     }
     y += 20;

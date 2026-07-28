@@ -7,6 +7,7 @@
 create table if not exists products (
   id uuid primary key default gen_random_uuid(),
   name text not null,
+  code text,
   caption text,
   price numeric(10,2) not null default 0,
   cost_price numeric(10,2),
@@ -19,6 +20,7 @@ create table if not exists products (
 );
 
 alter table products add column if not exists cost_price numeric(10,2);
+alter table products add column if not exists code text;
 
 alter table products enable row level security;
 
