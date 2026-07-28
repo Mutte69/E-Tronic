@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import AdminNav from "@/components/AdminNav";
-import PrintButton from "@/components/PrintButton";
+import DownloadInvoiceButton from "@/components/DownloadInvoiceButton";
 import { toggleInvoicePaid } from "@/app/admin/actions";
-import type { Invoice } from "@/lib/types";
+import type { Invoice, Settings } from "@/lib/types";
 
 export const revalidate = 0;
 
@@ -32,7 +33,7 @@ export default async function InvoiceViewPage({
         <div className="flex items-center justify-between mb-6 print:hidden">
           <h1 className="font-display text-2xl">Invoice #{inv.invoice_no}</h1>
           <div className="flex items-center gap-3">
-            <PrintButton />
+            <DownloadInvoiceButton invoice={inv} settings={(settings as Settings) ?? null} />
             <form action={toggleInvoicePaid.bind(null, inv.id, !isPaid)}>
               <button
                 className={`rounded-md font-body text-sm font-medium px-4 py-2 transition-colors ${
@@ -56,9 +57,9 @@ export default async function InvoiceViewPage({
 
           <div className="flex items-start justify-between mb-8">
             <div>
-              <p className="font-display text-xl">
-                <span className="text-copper-bright">E</span>tronic
-              </p>
+              <div className="relative w-28 h-9 mb-2">
+                <Image src="/etronic-logo.png" alt="E Tronic" fill className="object-contain object-left" />
+              </div>
               {settings?.address && (
                 <p className="font-body text-xs text-muted mt-1">{settings.address}</p>
               )}
