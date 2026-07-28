@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createInvoice } from "@/app/admin/actions";
+import SubmitButton from "@/components/SubmitButton";
 
 type Line = { name: string; price: string; cost_price: string; qty: string };
 
@@ -137,12 +138,12 @@ export default function NewInvoiceForm() {
         </span>
       </div>
 
-      <button
-        type="submit"
+      <SubmitButton
+        pendingText="Creating…"
         className="rounded-md bg-copper hover:bg-copper-bright transition-colors text-ink font-body text-sm font-medium px-5 py-2.5"
       >
         Create invoice
-      </button>
+      </SubmitButton>
     </form>
   );
 }

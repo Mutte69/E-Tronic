@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { updateSettings } from "@/app/admin/actions";
 import AdminNav from "@/components/AdminNav";
+import SubmitButton from "@/components/SubmitButton";
 import type { Settings } from "@/lib/types";
 
 export default async function SettingsPage({
@@ -32,7 +33,19 @@ export default async function SettingsPage({
             </legend>
             <Field label="Business name" name="business_name" defaultValue={settings?.business_name} />
             <Field label="Phone number" name="phone" defaultValue={settings?.phone ?? ""} />
-            <Field label="WhatsApp number (also used for cart orders)" name="whatsapp" defaultValue={settings?.whatsapp ?? ""} />
+            <div>
+              <Field
+                label="WhatsApp number (also used for cart orders)"
+                name="whatsapp"
+                defaultValue={settings?.whatsapp ?? ""}
+                mono
+                placeholder="9607712345"
+              />
+              <p className="font-body text-[11px] text-muted mt-1">
+                Country code first, no spaces, no + and no leading 0 — e.g.{" "}
+                <span className="font-mono">9607712345</span> for a Maldivian number.
+              </p>
+            </div>
             <div>
               <label className="block font-body text-xs text-muted mb-1" htmlFor="address">
                 Address
@@ -63,12 +76,12 @@ export default async function SettingsPage({
             <Field label="Account number" name="mib_account_number" defaultValue={settings?.mib_account_number ?? ""} mono />
           </fieldset>
 
-          <button
-            type="submit"
+          <SubmitButton
+            pendingText="Saving…"
             className="rounded-md bg-copper hover:bg-copper-bright transition-colors text-ink font-body text-sm font-medium px-5 py-2.5"
           >
             Save settings
-          </button>
+          </SubmitButton>
         </form>
       </main>
     </div>
@@ -80,11 +93,13 @@ function Field({
   name,
   defaultValue,
   mono,
+  placeholder,
 }: {
   label: string;
   name: string;
   defaultValue?: string | null;
   mono?: boolean;
+  placeholder?: string;
 }) {
   return (
     <div>
@@ -95,7 +110,8 @@ function Field({
         id={name}
         name={name}
         defaultValue={defaultValue ?? ""}
-        className={`w-full rounded-md bg-surface-raised border border-line px-3 py-2 text-sm text-paper focus:border-copper outline-none ${
+        placeholder={placeholder}
+        className={`w-full rounded-md bg-surface-raised border border-line px-3 py-2 text-sm text-paper placeholder:text-muted/50 focus:border-copper outline-none ${
           mono ? "font-mono" : "font-body"
         }`}
       />

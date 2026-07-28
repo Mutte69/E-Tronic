@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Settings } from "@/lib/types";
 
 export default function Footer({ settings }: { settings: Settings | null }) {
@@ -66,8 +67,27 @@ export default function Footer({ settings }: { settings: Settings | null }) {
           </div>
         )}
       </div>
-      <div className="border-t border-line py-5 text-center font-mono text-xs text-muted">
-        &copy; {new Date().getFullYear()} {settings?.business_name ?? "E Tronic"}
+      <div className="border-t border-line py-5 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 font-mono text-xs text-muted">
+        <span>
+          &copy; {new Date().getFullYear()} {settings?.business_name ?? "E Tronic"}
+        </span>
+        <span className="hidden sm:inline text-line">·</span>
+        <a
+          href="https://www.samugacreative.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 hover:text-paper transition-colors"
+        >
+          Powered by
+          <span className="relative w-16 h-4 inline-block">
+            <Image
+              src="/samuga-creative-logo.png"
+              alt="Samuga Creative"
+              fill
+              className="object-contain object-left"
+            />
+          </span>
+        </a>
       </div>
     </footer>
   );

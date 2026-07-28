@@ -49,7 +49,7 @@ export default async function HomePage({
 
       {/* Hero */}
       <section className="mx-auto max-w-6xl px-5 sm:px-8 pt-16 pb-10">
-        <div className="bracket-frame border border-line rounded-lg bg-grid bg-[length:28px_28px] px-6 sm:px-10 py-14 sm:py-20">
+        <div className="bracket-frame border border-line rounded-lg bg-grid bg-[length:28px_28px] px-6 sm:px-10 py-14 sm:py-20 animate-fade-in-up">
           <p className="font-mono text-xs tracking-[0.3em] uppercase text-copper-bright mb-4">
             Male&rsquo;, Maldives
           </p>
@@ -68,8 +68,10 @@ export default async function HomePage({
         <section className="mx-auto max-w-6xl px-5 sm:px-8 py-6">
           <SectionLabel>Featured</SectionLabel>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-            {featured.map((p) => (
-              <ProductCard key={p.id} product={p} />
+            {featured.map((p, i) => (
+              <div key={p.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 60}ms` }}>
+                <ProductCard product={p} />
+              </div>
             ))}
           </div>
         </section>
@@ -84,8 +86,10 @@ export default async function HomePage({
           </p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-            {rest.map((p) => (
-              <ProductCard key={p.id} product={p} />
+            {rest.map((p, i) => (
+              <div key={p.id} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(i * 60, 400)}ms` }}>
+                <ProductCard product={p} />
+              </div>
             ))}
           </div>
         )}

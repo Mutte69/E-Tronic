@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import type { Product } from "@/lib/types";
 import { generateProductCard } from "@/lib/card-generator";
+import SubmitButton from "@/components/SubmitButton";
 
 export default function ProductForm({
   product,
@@ -203,13 +204,13 @@ export default function ProductForm({
         </p>
       )}
 
-      <button
-        type="submit"
+      <SubmitButton
         disabled={!!needsCard}
+        pendingText={product ? "Saving…" : "Adding…"}
         className="rounded-md bg-copper hover:bg-copper-bright transition-colors text-ink font-body text-sm font-medium px-5 py-2.5 disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {product ? "Save changes" : "Add product"}
-      </button>
+      </SubmitButton>
     </form>
   );
 }

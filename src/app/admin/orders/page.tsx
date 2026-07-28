@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import AdminNav from "@/components/AdminNav";
 import { createInvoiceFromOrder } from "@/app/admin/actions";
+import SubmitButton from "@/components/SubmitButton";
 import type { Order } from "@/lib/types";
 
 export const revalidate = 0;
@@ -70,9 +71,12 @@ function OrderRow({ order }: { order: Order }) {
           </span>
           {order.status === "pending" ? (
             <form action={createInvoiceFromOrder.bind(null, order.id)}>
-              <button className="rounded-md bg-copper hover:bg-copper-bright transition-colors text-ink font-mono text-xs px-3 py-1.5">
+              <SubmitButton
+                pendingText="Creating…"
+                className="rounded-md bg-copper hover:bg-copper-bright transition-colors text-ink font-mono text-xs px-3 py-1.5"
+              >
                 Create invoice
-              </button>
+              </SubmitButton>
             </form>
           ) : (
             <span className="font-mono text-[10px] uppercase tracking-wide text-muted border border-line px-2 py-1 rounded-sm">

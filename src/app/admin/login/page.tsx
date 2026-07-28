@@ -1,4 +1,5 @@
 import { signIn } from "@/app/admin/actions";
+import SubmitButton from "@/components/SubmitButton";
 
 export default function LoginPage({
   searchParams,
@@ -44,12 +45,12 @@ export default function LoginPage({
               className="w-full rounded-md bg-surface-raised border border-line px-3 py-2 font-body text-sm text-paper focus:border-copper outline-none"
             />
           </div>
-          <button
-            type="submit"
-            className="w-full rounded-md bg-copper hover:bg-copper-bright transition-colors text-ink font-body text-sm font-medium py-2.5"
+          <SubmitButton
+            pendingText="Signing in…"
+            className="w-full justify-center rounded-md bg-copper hover:bg-copper-bright transition-colors text-ink font-body text-sm font-medium py-2.5"
           >
             Sign in
-          </button>
+          </SubmitButton>
         </form>
       </div>
     </div>

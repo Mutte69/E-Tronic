@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import AdminNav from "@/components/AdminNav";
 import DownloadInvoiceButton from "@/components/DownloadInvoiceButton";
 import { toggleInvoicePaid } from "@/app/admin/actions";
+import SubmitButton from "@/components/SubmitButton";
 import type { Invoice, Settings } from "@/lib/types";
 
 export const revalidate = 0;
@@ -35,7 +36,8 @@ export default async function InvoiceViewPage({
           <div className="flex items-center gap-3">
             <DownloadInvoiceButton invoice={inv} settings={(settings as Settings) ?? null} />
             <form action={toggleInvoicePaid.bind(null, inv.id, !isPaid)}>
-              <button
+              <SubmitButton
+                pendingText="Updating…"
                 className={`rounded-md font-body text-sm font-medium px-4 py-2 transition-colors ${
                   isPaid
                     ? "border border-line text-muted hover:text-paper"
@@ -43,7 +45,7 @@ export default async function InvoiceViewPage({
                 }`}
               >
                 {isPaid ? "Mark as unpaid" : "Mark as paid"}
-              </button>
+              </SubmitButton>
             </form>
           </div>
         </div>

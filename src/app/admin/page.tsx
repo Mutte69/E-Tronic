@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { toggleFeatured, toggleInStock } from "@/app/admin/actions";
 import DeleteProductButton from "@/components/DeleteProductButton";
 import AdminNav from "@/components/AdminNav";
+import SubmitButton from "@/components/SubmitButton";
 import type { Product } from "@/lib/types";
 
 export const revalidate = 0;
@@ -67,7 +68,8 @@ export default async function AdminDashboard() {
                 </div>
 
                 <form action={toggleFeatured.bind(null, p.id, !p.featured)}>
-                  <button
+                  <SubmitButton
+                    pendingText="…"
                     className={`font-mono text-[10px] uppercase tracking-wide px-2 py-1 rounded-sm border ${
                       p.featured
                         ? "bg-copper text-ink border-copper"
@@ -75,11 +77,12 @@ export default async function AdminDashboard() {
                     }`}
                   >
                     Featured
-                  </button>
+                  </SubmitButton>
                 </form>
 
                 <form action={toggleInStock.bind(null, p.id, !p.in_stock)}>
-                  <button
+                  <SubmitButton
+                    pendingText="…"
                     className={`font-mono text-[10px] uppercase tracking-wide px-2 py-1 rounded-sm border ${
                       p.in_stock
                         ? "border-line text-muted hover:text-paper"
@@ -87,7 +90,7 @@ export default async function AdminDashboard() {
                     }`}
                   >
                     {p.in_stock ? "In stock" : "Out of stock"}
-                  </button>
+                  </SubmitButton>
                 </form>
 
                 <Link
