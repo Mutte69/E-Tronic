@@ -1,0 +1,85 @@
+import { createClient } from "@/lib/supabase/server";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import ProductCard from "@/components/ProductCard";
+import type { Product, Settings } from "@/lib/types";
+
+export const revalidate = 0;
+
+export default async function HomePage() {
+  const supabase = createClient();
+
+  const [{ data: products }, { data: settings }] = await Promise.all([
+    supabase
+      .from("products")
+      .select("*")
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: false }),
+    supabase.from("settings").select("*").eq("id", 1).single(),
+  ]);
+
+  const allProducts = (products ?? []) as Product[];
+  const featured = allProducts.filter((p) => p.featured);
+  const rest = allProducts.filter((p) => !p.featured);
+
+  return (
+    <>
+      <Header />
+
+      {/* Hero */}
+      <section className="mx-auto max-w-6xl px-5 sm:px-8 pt-16 pb-10">
+        <div className="bracket-frame border border-line rounded-lg bg-grid bg-[length:28px_28px] px-6 sm:px-10 py-14 sm:py-20">
+          <p className="font-mono text-xs tracking-[0.3em] uppercase text-copper-bright mb-4">
+            Male&rsquo;, Maldives
+          </p>
+          <h1 className="font-display text-4xl sm:text-6xl leading-[1.05] text-balance max-w-2xl">
+            Electronics, sold and serviced right.
+          </h1>
+          <p className="font-body text-muted mt-5 max-w-md text-sm sm:text-base">
+            Devices, parts, and repairs from E Tronic. Reach out below for
+            stock, pricing, or a service booking.
+          </p>
+        </div>
+      </section>
+
+      {/* Featured */}
+      {featured.length > 0 && (
+        <section className="mx-auto max-w-6xl px-5 sm:px-8 py-6">
+          <SectionLabel>Featured</SectionLabel>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+            {featured.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* All products */}
+      <section id="products" className="mx-auto max-w-6xl px-5 sm:px-8 py-10">
+        <SectionLabel>All Products</SectionLabel>
+        {rest.length === 0 && featured.length === 0 ? (
+          <p className="font-body text-muted text-sm mt-4">
+            No products listed yet. Check back soon.
+          </p>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+            {rest.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      <Footer settings={(settings as Settings) ?? null} />
+    </>
+  );
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="font-display text-sm tracking-[0.2em] uppercase text-muted flex items-center gap-3">
+      <span className="w-6 h-px bg-copper" />
+      {children}
+    </h2>
+  );
+}
