@@ -1,8 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
-import { signOut, toggleFeatured, toggleInStock } from "@/app/admin/actions";
+import { toggleFeatured, toggleInStock } from "@/app/admin/actions";
 import DeleteProductButton from "@/components/DeleteProductButton";
+import AdminNav from "@/components/AdminNav";
 import type { Product } from "@/lib/types";
 
 export const revalidate = 0;
@@ -19,33 +20,7 @@ export default async function AdminDashboard() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-line">
-        <div className="mx-auto max-w-5xl px-5 sm:px-8 h-16 flex items-center justify-between">
-          <p className="font-display text-lg">
-            <span className="text-copper-bright">E</span>tronic{" "}
-            <span className="text-muted font-body text-sm">admin</span>
-          </p>
-          <div className="flex items-center gap-5">
-            <Link
-              href="/admin/settings"
-              className="font-body text-sm text-muted hover:text-paper transition-colors"
-            >
-              Settings
-            </Link>
-            <Link
-              href="/"
-              className="font-body text-sm text-muted hover:text-paper transition-colors"
-            >
-              View site
-            </Link>
-            <form action={signOut}>
-              <button className="font-body text-sm text-muted hover:text-copper-bright transition-colors">
-                Sign out
-              </button>
-            </form>
-          </div>
-        </div>
-      </header>
+      <AdminNav active="/admin" />
 
       <main className="mx-auto max-w-5xl px-5 sm:px-8 py-10">
         <div className="flex items-center justify-between mb-6">
@@ -67,7 +42,7 @@ export default async function AdminDashboard() {
             {list.map((p) => (
               <div
                 key={p.id}
-                className="flex items-center gap-4 border border-line rounded-lg bg-surface p-3"
+                className="flex items-center gap-4 border border-line rounded-lg bg-surface p-3 flex-wrap"
               >
                 <div className="relative w-16 h-16 rounded-md overflow-hidden bg-surface-raised shrink-0">
                   {p.image_url && (
@@ -85,6 +60,9 @@ export default async function AdminDashboard() {
                   <p className="font-body text-sm text-paper truncate">{p.name}</p>
                   <p className="font-mono text-xs text-copper-bright">
                     MVR {p.price.toFixed(2)}
+                    {p.cost_price != null && (
+                      <span className="text-muted"> · cost {p.cost_price.toFixed(2)}</span>
+                    )}
                   </p>
                 </div>
 

@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { updateSettings } from "@/app/admin/actions";
+import AdminNav from "@/components/AdminNav";
 import type { Settings } from "@/lib/types";
 
 export default async function SettingsPage({
@@ -14,16 +14,7 @@ export default async function SettingsPage({
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-line">
-        <div className="mx-auto max-w-5xl px-5 sm:px-8 h-16 flex items-center">
-          <Link
-            href="/admin"
-            className="font-body text-sm text-muted hover:text-paper transition-colors"
-          >
-            &larr; Back to products
-          </Link>
-        </div>
-      </header>
+      <AdminNav active="/admin/settings" />
 
       <main className="mx-auto max-w-5xl px-5 sm:px-8 py-10">
         <h1 className="font-display text-2xl mb-6">Settings</h1>
@@ -41,7 +32,7 @@ export default async function SettingsPage({
             </legend>
             <Field label="Business name" name="business_name" defaultValue={settings?.business_name} />
             <Field label="Phone number" name="phone" defaultValue={settings?.phone ?? ""} />
-            <Field label="WhatsApp number" name="whatsapp" defaultValue={settings?.whatsapp ?? ""} />
+            <Field label="WhatsApp number (also used for cart orders)" name="whatsapp" defaultValue={settings?.whatsapp ?? ""} />
             <div>
               <label className="block font-body text-xs text-muted mb-1" htmlFor="address">
                 Address

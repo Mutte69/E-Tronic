@@ -60,6 +60,9 @@ export async function createProduct(formData: FormData) {
     name: String(formData.get("name") ?? "").trim(),
     caption: String(formData.get("caption") ?? "").trim() || null,
     price: parsePrice(formData.get("price")),
+    cost_price: formData.get("cost_price")
+      ? parsePrice(formData.get("cost_price"))
+      : null,
     image_url: imageUrl,
     featured: formData.get("featured") === "on",
     in_stock: formData.get("in_stock") === "on",
@@ -80,6 +83,9 @@ export async function updateProduct(id: string, formData: FormData) {
     name: String(formData.get("name") ?? "").trim(),
     caption: String(formData.get("caption") ?? "").trim() || null,
     price: parsePrice(formData.get("price")),
+    cost_price: formData.get("cost_price")
+      ? parsePrice(formData.get("cost_price"))
+      : null,
     featured: formData.get("featured") === "on",
     in_stock: formData.get("in_stock") === "on",
     updated_at: new Date().toISOString(),
@@ -125,6 +131,110 @@ export async function toggleInStock(id: string, next: boolean) {
 
   revalidatePath("/");
   revalidatePath("/admin");
+}
+
+export async function markOrderInvoiced(orderId: string) {
+  const supabase = createClient();
+  await supabase.from("orders").update({ status: "invoiced" }).eq("id", orderId);
+  revalidatePath("/admin/orders");
+}
+
+export async function createInvoiceFromOrder(orderId: string) {
+  const supabase = createClient();
+
+  const { data: order, error: orderError } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("id", orderId)
+    .single();
+
+  if (orderError || !order) throw new Error(orderError?.message ?? "Order not found");
+
+  const productIds = (order.items as { product_id: string }[]).map(
+    (i) => i.product_id
+  );
+  const { data: products } = await supabase
+    .from("products")
+    .select("id, cost_price")
+    .in("id", productIds);
+
+  const costByProduct = new Map(
+    (products ?? []).map((p) => [p.id, p.cost_price as number | null])
+  );
+
+  const items = (
+    order.items as { product_id: string; name: string; price: number; qty: number }[]
+  ).map((i) => ({
+    name: i.name,
+    price: i.price,
+    qty: i.qty,
+    cost_price: costByProduct.get(i.product_id) ?? null,
+  }));
+
+  const { data: invoice, error } = await supabase
+    .from("invoices")
+    .insert({
+      order_id: order.id,
+      customer_name: order.customer_name,
+      customer_phone: order.customer_phone,
+      customer_address: order.customer_address,
+      items,
+      subtotal: order.subtotal,
+    })
+    .select()
+    .single();
+
+  if (error || !invoice) throw new Error(error?.message ?? "Could not create invoice");
+
+  await supabase.from("orders").update({ status: "invoiced" }).eq("id", orderId);
+
+  revalidatePath("/admin/orders");
+  revalidatePath("/admin/invoices");
+  redirect(`/admin/invoices/${invoice.id}`);
+}
+
+export async function createInvoice(formData: FormData) {
+  const supabase = createClient();
+
+  const itemsRaw = String(formData.get("items") ?? "[]");
+  let items: { name: string; price: number; cost_price: number | null; qty: number }[] = [];
+  try {
+    items = JSON.parse(itemsRaw);
+  } catch {
+    items = [];
+  }
+
+  const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+
+  const { data: invoice, error } = await supabase
+    .from("invoices")
+    .insert({
+      customer_name: String(formData.get("customer_name") ?? "").trim(),
+      customer_phone: String(formData.get("customer_phone") ?? "").trim() || null,
+      customer_address: String(formData.get("customer_address") ?? "").trim() || null,
+      items,
+      subtotal,
+    })
+    .select()
+    .single();
+
+  if (error || !invoice) throw new Error(error?.message ?? "Could not create invoice");
+
+  revalidatePath("/admin/invoices");
+  redirect(`/admin/invoices/${invoice.id}`);
+}
+
+export async function toggleInvoicePaid(id: string, next: boolean) {
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("invoices")
+    .update({ status: next ? "paid" : "unpaid", paid_at: next ? new Date().toISOString() : null })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/admin/invoices");
+  revalidatePath(`/admin/invoices/${id}`);
+  revalidatePath("/admin/analytics");
 }
 
 export async function updateSettings(formData: FormData) {

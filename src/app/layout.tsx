@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { CartProvider } from "@/lib/cart-context";
 
 export const metadata: Metadata = {
   title: "E Tronic — Electronics Sales & Service",
@@ -15,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-body bg-ink text-paper min-h-screen">
-        {children}
+        <CartProvider>{children}</CartProvider>
       </body>
     </html>
   );

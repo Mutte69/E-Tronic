@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { Product } from "@/lib/types";
+import AddToCartButton from "@/components/AddToCartButton";
 
 export default function ProductCard({ product }: { product: Product }) {
   return (
@@ -46,9 +47,10 @@ export default function ProductCard({ product }: { product: Product }) {
             {product.caption}
           </p>
         )}
-        <p className="font-mono text-copper-bright text-sm">
+        <p className="font-mono text-copper-bright text-sm mb-2">
           MVR {product.price.toFixed(2)}
         </p>
+        <AddToCartButton product={product} />
       </div>
     </div>
   );

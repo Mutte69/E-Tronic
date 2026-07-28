@@ -2,11 +2,16 @@ import { createClient } from "@/lib/supabase/server";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
+import CartDrawer from "@/components/CartDrawer";
 import type { Product, Settings } from "@/lib/types";
 
 export const revalidate = 0;
 
-export default async function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: { order_error?: string; order_saved?: string };
+}) {
   const supabase = createClient();
 
   const [{ data: products }, { data: settings }] = await Promise.all([
@@ -25,6 +30,22 @@ export default async function HomePage() {
   return (
     <>
       <Header />
+
+      {searchParams?.order_error && (
+        <div className="mx-auto max-w-6xl px-5 sm:px-8 pt-6">
+          <p className="font-body text-sm text-copper-bright bg-copper/10 border border-copper/30 rounded-md px-4 py-3">
+            Something went wrong sending your order. Please try again, or
+            contact us directly.
+          </p>
+        </div>
+      )}
+      {searchParams?.order_saved && (
+        <div className="mx-auto max-w-6xl px-5 sm:px-8 pt-6">
+          <p className="font-body text-sm text-copper-bright bg-copper/10 border border-copper/30 rounded-md px-4 py-3">
+            Your order was saved. We&rsquo;ll reach out to confirm it shortly.
+          </p>
+        </div>
+      )}
 
       {/* Hero */}
       <section className="mx-auto max-w-6xl px-5 sm:px-8 pt-16 pb-10">
@@ -71,6 +92,7 @@ export default async function HomePage() {
       </section>
 
       <Footer settings={(settings as Settings) ?? null} />
+      <CartDrawer />
     </>
   );
 }

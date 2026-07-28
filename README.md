@@ -1,17 +1,39 @@
 # E Tronic website
 
-Next.js site + admin dashboard for E Tronic. Public site shows products
-(featured ones on top), contact info, and bank transfer details. The
-admin dashboard (`/admin`) lets your brother log in and manage all of it
-himself — no code required after setup.
+Next.js site + admin dashboard for E Tronic. Customers browse products,
+build a cart, and check out straight to WhatsApp with an itemized
+message. The admin dashboard (`/admin`) lets your brother run
+everything himself — products, orders, invoices, and sales — no code
+required.
+
+## What's in here
+
+- **Public site** — dark theme matching the logo, featured row, full
+  catalogue, cart with WhatsApp checkout, contact + BML/MIB bank details
+- **Admin dashboard**
+  - **Products** — photo, name, description, price, and a private cost
+    price (for profit tracking only, never shown to customers)
+  - **Branded card generator** — pick a photo, fill in name + price,
+    hit *Generate branded card* and it composites the E Tronic logo,
+    name, and price onto the photo before it's posted
+  - **Orders** — every WhatsApp cart checkout lands here first, so you
+    can turn it into an invoice with one click
+  - **Invoices** — itemized, printable, with a **PAID** stamp once
+    marked paid
+  - **Analytics** — today/this month's sales, profit (using your cost
+    prices), last 7 days chart, order counts
 
 ## 1. Create a Supabase project (free tier is enough)
 
 1. Go to https://supabase.com, sign up, and create a new project.
+   (If you already use Supabase for another business like Samuga Menu,
+   still create a **separate new project** for E Tronic — don't share
+   one project between businesses.)
 2. Once it's ready, open **SQL Editor > New query**, paste in the
    contents of `supabase/schema.sql` from this repo, and run it. This
-   creates the `products` table, `settings` table, and the storage
-   bucket for photos.
+   creates all the tables (products, settings, orders, invoices) and
+   the photo storage bucket. It's safe to run again later if this file
+   gets updated — it only creates what's missing.
 3. Go to **Authentication > Users > Add user** and create one user with
    your brother's email and a password — that's his admin login.
 4. Go to **Settings > API** and copy:
@@ -52,16 +74,34 @@ http://localhost:3000/admin for the dashboard.
 
 ## Using the admin dashboard
 
-- Log in at `/admin/login` with the email/password created in step 1.
-- **Add product**: photo, name, short description, price, and a
-  "Show as featured" toggle — featured items appear in their own row
-  at the top of the homepage.
-- **Settings**: phone, WhatsApp, address, and BML/MIB account details
-  shown in the site footer.
-- Toggle "Featured" / "In stock" or remove a product straight from the
-  product list — no separate edit step needed for those.
+- **Products**: add a photo, name, price, and (optionally) your cost
+  price. Once a photo is chosen, hit **Generate branded card** — this
+  overlays the E Tronic logo, item name, and price onto the photo, and
+  that's the image that gets posted. "Featured" items show in their
+  own row at the top of the homepage.
+- **Orders**: when a customer checks out through the site's cart, the
+  order lands here with their name, phone, and address. Hit **Create
+  invoice** to turn it into a proper invoice.
+- **Invoices**: itemized, printable (use *Print / save as PDF*).
+  **Mark as paid** stamps it PAID. You can also create a standalone
+  invoice from here for phone/in-person orders.
+- **Analytics**: today's and this month's sales and profit, a 7-day
+  chart, and running totals. Profit uses the cost price you set per
+  product (or per invoice line for manual invoices). Numbers count
+  once an invoice is marked paid.
+- **Settings**: phone, WhatsApp (used for both the footer and cart
+  checkout messages), address, and BML/MIB account details.
+
+## How checkout works
+
+A customer adds items to their cart (stored in their browser), fills
+in their name/phone/delivery address, and hits **Send order to
+WhatsApp**. The order is saved on your side automatically, and they're
+taken straight to WhatsApp with a pre-filled message listing every
+item, the total, and their details — they just hit send.
 
 ## Adding more admin users later
 
 Repeat step 1.3 in Supabase (**Authentication > Users > Add user**) —
 no code changes needed.
+
