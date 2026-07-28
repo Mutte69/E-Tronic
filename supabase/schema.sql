@@ -39,6 +39,7 @@ create policy "Authenticated can manage products"
 create table if not exists settings (
   id int primary key default 1,
   business_name text not null default 'E Tronic',
+  registration_number text,
   phone text,
   whatsapp text,
   address text,
@@ -52,6 +53,8 @@ create table if not exists settings (
 
 insert into settings (id, business_name) values (1, 'E Tronic')
   on conflict (id) do nothing;
+
+alter table settings add column if not exists registration_number text;
 
 alter table settings enable row level security;
 

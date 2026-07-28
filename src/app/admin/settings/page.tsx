@@ -32,6 +32,11 @@ export default async function SettingsPage({
               Contact
             </legend>
             <Field label="Business name" name="business_name" defaultValue={settings?.business_name} />
+            <Field
+              label="Business registration number"
+              name="registration_number"
+              defaultValue={settings?.registration_number ?? ""}
+            />
             <Field label="Phone number" name="phone" defaultValue={settings?.phone ?? ""} />
             <div>
               <Field

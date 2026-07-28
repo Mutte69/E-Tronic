@@ -6,6 +6,8 @@ import type { Invoice, Settings } from "@/lib/types";
 const COPPER: [number, number, number] = [198, 121, 61];
 const INK: [number, number, number] = [30, 28, 26];
 const MUTED: [number, number, number] = [130, 126, 118];
+const HAIRLINE: [number, number, number] = [230, 226, 218];
+const ZEBRA: [number, number, number] = [250, 248, 244];
 
 function loadImageAsDataUrl(src: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -26,10 +28,11 @@ function loadImageAsDataUrl(src: string): Promise<string> {
 }
 
 export async function downloadInvoicePdf(invoice: Invoice, settings: Settings | null) {
-  const logo = await loadImageAsDataUrl("/etronic-logo.png").catch(() => null);
+  const logo = await loadImageAsDataUrl("/etronic-logo-black.png").catch(() => null);
 
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 48;
   let y = margin;
 
@@ -38,63 +41,80 @@ export async function downloadInvoicePdf(invoice: Invoice, settings: Settings | 
     const logoW = 130;
     const logoH = logoW * (332 / 1155); // matches the cropped asset's aspect ratio
     doc.addImage(logo, "PNG", margin, y, logoW, logoH);
-    y += logoH + 20;
+    y += logoH + 14;
   } else {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(20);
     doc.setTextColor(...INK);
     doc.text("E tronic", margin, y + 20);
-    y += 40;
+    y += 34;
   }
 
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  doc.setTextColor(...MUTED);
+  if (settings?.registration_number) {
+    doc.text(`Reg. No. ${settings.registration_number}`, margin, y);
+    y += 12;
+  }
   if (settings?.address) {
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.setTextColor(...MUTED);
     doc.text(settings.address, margin, y);
-    y += 14;
+    y += 12;
   }
   if (settings?.phone) {
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.setTextColor(...MUTED);
     doc.text(settings.phone, margin, y);
-    y += 14;
+    y += 12;
   }
 
   // Invoice meta, top-right
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(18);
+  doc.setFontSize(20);
   doc.setTextColor(...INK);
   doc.text("INVOICE", pageWidth - margin, margin + 8, { align: "right" });
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
   doc.setTextColor(...MUTED);
-  doc.text(`#${invoice.invoice_no}`, pageWidth - margin, margin + 26, { align: "right" });
+  doc.text(`#${invoice.invoice_no}`, pageWidth - margin, margin + 28, { align: "right" });
   doc.text(
     new Date(invoice.created_at).toLocaleDateString(),
     pageWidth - margin,
-    margin + 40,
+    margin + 42,
     { align: "right" }
   );
+  if (invoice.status === "paid" && invoice.paid_at) {
+    doc.setTextColor(...COPPER);
+    doc.text(
+      `Paid ${new Date(invoice.paid_at).toLocaleDateString()}`,
+      pageWidth - margin,
+      margin + 56,
+      { align: "right" }
+    );
+  }
 
-  y = Math.max(y, margin + 70);
-  y += 20;
+  y = Math.max(y, margin + 90);
+  y += 14;
+
+  doc.setDrawColor(...HAIRLINE);
+  doc.setLineWidth(1);
+  doc.line(margin, y, pageWidth - margin, y);
+  y += 26;
 
   // Bill to
+  const billToY = y;
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
+  doc.setFontSize(8);
   doc.setTextColor(...MUTED);
   doc.text("BILL TO", margin, y);
   y += 16;
 
-  doc.setFont("helvetica", "normal");
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
   doc.setTextColor(...INK);
   doc.text(invoice.customer_name, margin, y);
   y += 15;
 
+  doc.setFont("helvetica", "normal");
   if (invoice.customer_phone) {
     doc.setFontSize(9);
     doc.setTextColor(...MUTED);
@@ -104,13 +124,59 @@ export async function downloadInvoicePdf(invoice: Invoice, settings: Settings | 
   if (invoice.customer_address) {
     doc.setFontSize(9);
     doc.setTextColor(...MUTED);
-    doc.text(invoice.customer_address, margin, y, { maxWidth: pageWidth - margin * 2 });
+    doc.text(invoice.customer_address, margin, y, { maxWidth: 240 });
     y += 20;
   }
 
-  y += 15;
+  // Payment details, top-right of the same row
+  const hasBank = settings?.bml_account_number || settings?.mib_account_number;
+  if (hasBank) {
+    let py = billToY;
+    const px = pageWidth - margin;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(...MUTED);
+    doc.text("PAYMENT DETAILS", px, py, { align: "right" });
+    py += 16;
 
-  // Table header
+    if (settings?.bml_account_number) {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(...INK);
+      doc.text("BML", px, py, { align: "right" });
+      py += 12;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(...MUTED);
+      if (settings.bml_account_name) {
+        doc.text(settings.bml_account_name, px, py, { align: "right" });
+        py += 12;
+      }
+      doc.text(settings.bml_account_number, px, py, { align: "right" });
+      py += 16;
+    }
+    if (settings?.mib_account_number) {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(...INK);
+      doc.text("MIB", px, py, { align: "right" });
+      py += 12;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(...MUTED);
+      if (settings.mib_account_name) {
+        doc.text(settings.mib_account_name, px, py, { align: "right" });
+        py += 12;
+      }
+      doc.text(settings.mib_account_number, px, py, { align: "right" });
+      py += 16;
+    }
+    y = Math.max(y, py);
+  }
+
+  y += 16;
+
+  // Table
   const col = {
     item: margin,
     qty: pageWidth - margin - 200,
@@ -118,59 +184,64 @@ export async function downloadInvoicePdf(invoice: Invoice, settings: Settings | 
     total: pageWidth - margin,
   };
 
-  doc.setDrawColor(...COPPER);
-  doc.setLineWidth(1);
-  doc.line(margin, y, pageWidth - margin, y);
-  y += 16;
-
+  doc.setFillColor(...INK);
+  doc.rect(margin, y, pageWidth - margin * 2, 24, "F");
   doc.setFont("helvetica", "bold");
   doc.setFontSize(8);
-  doc.setTextColor(...MUTED);
-  doc.text("ITEM", col.item, y);
-  doc.text("QTY", col.qty, y, { align: "right" });
-  doc.text("PRICE", col.price, y, { align: "right" });
-  doc.text("TOTAL", col.total, y, { align: "right" });
-  y += 8;
-
-  doc.setDrawColor(230, 226, 218);
-  doc.setLineWidth(0.5);
-  doc.line(margin, y, pageWidth - margin, y);
-  y += 18;
+  doc.setTextColor(255, 255, 255);
+  doc.text("ITEM", col.item + 10, y + 16);
+  doc.text("QTY", col.qty, y + 16, { align: "right" });
+  doc.text("PRICE", col.price, y + 16, { align: "right" });
+  doc.text("TOTAL", col.total - 10, y + 16, { align: "right" });
+  y += 24;
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
-  for (const item of invoice.items) {
+  invoice.items.forEach((item, i) => {
+    const rowH = 26;
+    if (i % 2 === 1) {
+      doc.setFillColor(...ZEBRA);
+      doc.rect(margin, y, pageWidth - margin * 2, rowH, "F");
+    }
+    const textY = y + 17;
     doc.setTextColor(...INK);
-    doc.text(item.name, col.item, y, { maxWidth: col.qty - margin - 20 });
+    doc.text(item.name, col.item + 10, textY, { maxWidth: col.qty - margin - 30 });
     doc.setTextColor(...MUTED);
-    doc.text(String(item.qty), col.qty, y, { align: "right" });
-    doc.text(item.price.toFixed(2), col.price, y, { align: "right" });
+    doc.text(String(item.qty), col.qty, textY, { align: "right" });
+    doc.text(item.price.toFixed(2), col.price, textY, { align: "right" });
     doc.setTextColor(...INK);
-    doc.text((item.price * item.qty).toFixed(2), col.total, y, { align: "right" });
-    y += 20;
-  }
+    doc.text((item.price * item.qty).toFixed(2), col.total - 10, textY, { align: "right" });
+    y += rowH;
+  });
 
-  y += 6;
-  doc.setDrawColor(230, 226, 218);
+  doc.setDrawColor(...HAIRLINE);
   doc.line(margin, y, pageWidth - margin, y);
-  y += 24;
+  y += 30;
 
   // Total
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
+  doc.setFontSize(10);
   doc.setTextColor(...MUTED);
-  doc.text("TOTAL", col.price, y, { align: "right" });
-  doc.setFontSize(14);
+  doc.text("TOTAL DUE", col.price, y, { align: "right" });
+  doc.setFontSize(16);
   doc.setTextColor(...COPPER);
-  doc.text(`MVR ${invoice.subtotal.toFixed(2)}`, col.total, y, { align: "right" });
+  doc.text(`MVR ${invoice.subtotal.toFixed(2)}`, col.total - 10, y, { align: "right" });
 
   // PAID stamp
   if (invoice.status === "paid") {
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(32);
+    doc.setFontSize(34);
     doc.setTextColor(...COPPER);
-    doc.text("PAID", pageWidth - margin - 90, margin + 100, { angle: 18 });
+    doc.text("PAID", pageWidth - margin - 100, margin + 110, { angle: 18 });
   }
+
+  // Footer
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  doc.setTextColor(...MUTED);
+  doc.text("Thank you for your business.", margin, pageHeight - 48);
+  doc.setDrawColor(...HAIRLINE);
+  doc.line(margin, pageHeight - 60, pageWidth - margin, pageHeight - 60);
 
   doc.save(`etronic-invoice-${invoice.invoice_no}.pdf`);
 }

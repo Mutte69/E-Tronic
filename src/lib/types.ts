@@ -15,6 +15,7 @@ export type Product = {
 export type Settings = {
   id: number;
   business_name: string;
+  registration_number: string | null;
   phone: string | null;
   whatsapp: string | null;
   address: string | null;

@@ -244,6 +244,7 @@ export async function updateSettings(formData: FormData) {
     .from("settings")
     .update({
       business_name: String(formData.get("business_name") ?? "").trim() || "E Tronic",
+      registration_number: String(formData.get("registration_number") ?? "").trim() || null,
       phone: String(formData.get("phone") ?? "").trim() || null,
       whatsapp: String(formData.get("whatsapp") ?? "").trim() || null,
       address: String(formData.get("address") ?? "").trim() || null,

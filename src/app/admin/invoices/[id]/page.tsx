@@ -57,11 +57,16 @@ export default async function InvoiceViewPage({
             </div>
           )}
 
-          <div className="flex items-start justify-between mb-8">
+          <div className="flex items-start justify-between mb-8 gap-6 flex-wrap">
             <div>
               <div className="relative w-28 h-9 mb-2">
                 <Image src="/etronic-logo.png" alt="E Tronic" fill className="object-contain object-left" />
               </div>
+              {settings?.registration_number && (
+                <p className="font-mono text-[10px] text-muted mt-1">
+                  Reg. No. {settings.registration_number}
+                </p>
+              )}
               {settings?.address && (
                 <p className="font-body text-xs text-muted mt-1">{settings.address}</p>
               )}
@@ -78,16 +83,48 @@ export default async function InvoiceViewPage({
             </div>
           </div>
 
-          <div className="mb-8">
-            <p className="font-mono text-[10px] uppercase tracking-widest text-muted mb-1">
-              Bill to
-            </p>
-            <p className="font-body text-sm text-paper">{inv.customer_name}</p>
-            {inv.customer_phone && (
-              <p className="font-mono text-xs text-muted">{inv.customer_phone}</p>
-            )}
-            {inv.customer_address && (
-              <p className="font-body text-xs text-muted">{inv.customer_address}</p>
+          <div className="flex items-start justify-between mb-8 gap-6 flex-wrap">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-widest text-muted mb-1">
+                Bill to
+              </p>
+              <p className="font-body text-sm text-paper">{inv.customer_name}</p>
+              {inv.customer_phone && (
+                <p className="font-mono text-xs text-muted">{inv.customer_phone}</p>
+              )}
+              {inv.customer_address && (
+                <p className="font-body text-xs text-muted">{inv.customer_address}</p>
+              )}
+            </div>
+
+            {(settings?.bml_account_number || settings?.mib_account_number) && (
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-widest text-muted mb-1">
+                  Payment details
+                </p>
+                <div className="space-y-2">
+                  {settings?.bml_account_number && (
+                    <div>
+                      <p className="font-body text-xs text-paper">
+                        BML {settings.bml_account_name ? `· ${settings.bml_account_name}` : ""}
+                      </p>
+                      <p className="font-mono text-xs text-copper-bright">
+                        {settings.bml_account_number}
+                      </p>
+                    </div>
+                  )}
+                  {settings?.mib_account_number && (
+                    <div>
+                      <p className="font-body text-xs text-paper">
+                        MIB {settings.mib_account_name ? `· ${settings.mib_account_name}` : ""}
+                      </p>
+                      <p className="font-mono text-xs text-copper-bright">
+                        {settings.mib_account_number}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
           </div>
 

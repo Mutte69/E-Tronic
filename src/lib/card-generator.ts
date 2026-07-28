@@ -54,9 +54,9 @@ export async function generateProductCard({
   name: string;
   price: string;
 }): Promise<Blob> {
-  const [photo, mark] = await Promise.all([
+  const [photo, logo] = await Promise.all([
     loadImage(URL.createObjectURL(file)),
-    loadImage("/etronic-mark.png"),
+    loadImage("/etronic-logo.png"),
   ]);
   await ensureFontsReady();
 
@@ -69,6 +69,13 @@ export async function generateProductCard({
   // base photo, cropped to fill the square
   drawCover(ctx, photo, CANVAS_SIZE);
 
+  // top gradient, so the logo stays legible over any photo
+  const topGradient = ctx.createLinearGradient(0, 0, 0, CANVAS_SIZE * 0.22);
+  topGradient.addColorStop(0, "rgba(10,10,10,0.6)");
+  topGradient.addColorStop(1, "rgba(10,10,10,0)");
+  ctx.fillStyle = topGradient;
+  ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE * 0.22);
+
   // bottom gradient for text legibility
   const gradient = ctx.createLinearGradient(0, CANVAS_SIZE * 0.45, 0, CANVAS_SIZE);
   gradient.addColorStop(0, "rgba(10,10,10,0)");
@@ -76,12 +83,10 @@ export async function generateProductCard({
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-  // watermark logo, top-right
-  const markW = 150;
-  const markH = markW * (mark.height / mark.width);
-  ctx.globalAlpha = 0.92;
-  ctx.drawImage(mark, CANVAS_SIZE - markW - 40, 40, markW, markH);
-  ctx.globalAlpha = 1;
+  // full logo wordmark, top-left, sized to always fit without cropping
+  const logoW = CANVAS_SIZE * 0.26;
+  const logoH = logoW * (logo.height / logo.width);
+  ctx.drawImage(logo, 44, 40, logoW, logoH);
 
   // corner brackets, echoing the site's signature motif
   ctx.strokeStyle = "#C6793D";
