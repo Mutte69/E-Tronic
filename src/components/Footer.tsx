@@ -1,4 +1,5 @@
 import Image from "next/image";
+import CopyableCode from "@/components/CopyableCode";
 import type { Settings } from "@/lib/types";
 
 export default function Footer({ settings }: { settings: Settings | null }) {
@@ -45,9 +46,7 @@ export default function Footer({ settings }: { settings: Settings | null }) {
                   <p className="font-body text-sm text-paper">
                     {settings?.bml_account_name}
                   </p>
-                  <p className="font-mono text-sm text-copper-bright">
-                    {settings?.bml_account_number}
-                  </p>
+                  <CopyableCode value={settings!.bml_account_number!} />
                 </div>
               )}
               {hasMib && (
@@ -58,9 +57,7 @@ export default function Footer({ settings }: { settings: Settings | null }) {
                   <p className="font-body text-sm text-paper">
                     {settings?.mib_account_name}
                   </p>
-                  <p className="font-mono text-sm text-copper-bright">
-                    {settings?.mib_account_number}
-                  </p>
+                  <CopyableCode value={settings!.mib_account_number!} />
                 </div>
               )}
             </div>
@@ -76,17 +73,18 @@ export default function Footer({ settings }: { settings: Settings | null }) {
           href="https://www.samugacreative.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 hover:text-paper transition-colors"
+          className="inline-flex items-center gap-2 hover:text-paper transition-colors"
         >
-          Powered by
-          <span className="relative w-16 h-4 inline-block">
+          <span>Powered by</span>
+          <span className="relative w-4 h-4 inline-block shrink-0">
             <Image
               src="/samuga-creative-logo.png"
-              alt="Samuga Creative"
+              alt=""
               fill
-              className="object-contain object-left"
+              className="object-contain"
             />
           </span>
+          <span className="font-body text-paper/80">Samuga Creative</span>
         </a>
       </div>
     </footer>
