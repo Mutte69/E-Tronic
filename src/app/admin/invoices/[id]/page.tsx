@@ -9,6 +9,9 @@ import type { Invoice, Settings } from "@/lib/types";
 
 export const revalidate = 0;
 
+const TERMS =
+  "Payment is due upon receipt of this invoice unless otherwise agreed. For bank transfers, please use the invoice number as the payment reference. Items are covered under the relevant manufacturer's warranty where applicable; E Tronic is not liable for damage caused by misuse, unauthorised repair, or normal wear. Please retain this invoice as proof of purchase for any service or warranty claim.";
+
 export default async function InvoiceViewPage({
   params,
 }: {
@@ -22,7 +25,9 @@ export default async function InvoiceViewPage({
 
   if (!invoice) notFound();
   const inv = invoice as Invoice;
+  const s = (settings as Settings) ?? null;
   const isPaid = inv.status === "paid";
+  const hasBank = s?.bml_account_number || s?.mib_account_number;
 
   return (
     <div className="min-h-screen">
@@ -34,7 +39,7 @@ export default async function InvoiceViewPage({
         <div className="flex items-center justify-between mb-6 print:hidden">
           <h1 className="font-display text-2xl">Invoice #{inv.invoice_no}</h1>
           <div className="flex items-center gap-3">
-            <DownloadInvoiceButton invoice={inv} settings={(settings as Settings) ?? null} />
+            <DownloadInvoiceButton invoice={inv} settings={s} />
             <form action={toggleInvoicePaid.bind(null, inv.id, !isPaid)}>
               <SubmitButton
                 pendingText="Updating…"
@@ -62,17 +67,13 @@ export default async function InvoiceViewPage({
               <div className="relative w-28 h-9 mb-2">
                 <Image src="/etronic-logo.png" alt="E Tronic" fill className="object-contain object-left" />
               </div>
-              {settings?.registration_number && (
+              {s?.registration_number && (
                 <p className="font-mono text-[10px] text-muted mt-1">
-                  Reg. No. {settings.registration_number}
+                  Reg. No. {s.registration_number}
                 </p>
               )}
-              {settings?.address && (
-                <p className="font-body text-xs text-muted mt-1">{settings.address}</p>
-              )}
-              {settings?.phone && (
-                <p className="font-mono text-xs text-muted">{settings.phone}</p>
-              )}
+              {s?.address && <p className="font-body text-xs text-muted mt-1">{s.address}</p>}
+              {s?.phone && <p className="font-mono text-xs text-muted">{s.phone}</p>}
             </div>
             <div className="text-right">
               <p className="font-mono text-xs text-muted">Invoice</p>
@@ -83,79 +84,49 @@ export default async function InvoiceViewPage({
             </div>
           </div>
 
-          <div className="flex items-start justify-between mb-8 gap-6 flex-wrap">
-            <div>
-              <p className="font-mono text-[10px] uppercase tracking-widest text-muted mb-1">
-                Bill to
-              </p>
-              <p className="font-body text-sm text-paper">{inv.customer_name}</p>
-              {inv.customer_phone && (
-                <p className="font-mono text-xs text-muted">{inv.customer_phone}</p>
-              )}
-              {inv.customer_address && (
-                <p className="font-body text-xs text-muted">{inv.customer_address}</p>
-              )}
-            </div>
+          <div className="border-t border-line mb-6" />
 
-            {(settings?.bml_account_number || settings?.mib_account_number) && (
-              <div>
-                <p className="font-mono text-[10px] uppercase tracking-widest text-muted mb-1">
-                  Payment details
-                </p>
-                <div className="space-y-2">
-                  {settings?.bml_account_number && (
-                    <div>
-                      <p className="font-body text-xs text-paper">
-                        BML {settings.bml_account_name ? `· ${settings.bml_account_name}` : ""}
-                      </p>
-                      <p className="font-mono text-xs text-copper-bright">
-                        {settings.bml_account_number}
-                      </p>
-                    </div>
-                  )}
-                  {settings?.mib_account_number && (
-                    <div>
-                      <p className="font-body text-xs text-paper">
-                        MIB {settings.mib_account_name ? `· ${settings.mib_account_name}` : ""}
-                      </p>
-                      <p className="font-mono text-xs text-copper-bright">
-                        {settings.mib_account_number}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
+          <div className="mb-8">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-muted mb-1">
+              Bill to
+            </p>
+            <p className="font-body text-sm text-paper font-medium">{inv.customer_name}</p>
+            {inv.customer_phone && (
+              <p className="font-mono text-xs text-muted">{inv.customer_phone}</p>
+            )}
+            {inv.customer_address && (
+              <p className="font-body text-xs text-muted">{inv.customer_address}</p>
             )}
           </div>
 
-          <table className="w-full mb-6">
+          <table className="w-full mb-2">
             <thead>
-              <tr className="border-b border-line">
-                <th className="text-left font-mono text-[10px] uppercase tracking-widest text-muted pb-2">
+              <tr className="bg-ink">
+                <th className="text-left font-mono text-[10px] uppercase tracking-widest text-muted px-3 py-2">
                   Item
                 </th>
-                <th className="text-right font-mono text-[10px] uppercase tracking-widest text-muted pb-2">
+                <th className="text-right font-mono text-[10px] uppercase tracking-widest text-muted px-3 py-2">
                   Qty
                 </th>
-                <th className="text-right font-mono text-[10px] uppercase tracking-widest text-muted pb-2">
+                <th className="text-right font-mono text-[10px] uppercase tracking-widest text-muted px-3 py-2">
                   Price
                 </th>
-                <th className="text-right font-mono text-[10px] uppercase tracking-widest text-muted pb-2">
+                <th className="text-right font-mono text-[10px] uppercase tracking-widest text-muted px-3 py-2">
                   Total
                 </th>
               </tr>
             </thead>
             <tbody>
               {inv.items.map((item, i) => (
-                <tr key={i} className="border-b border-line/50">
-                  <td className="font-body text-sm text-paper py-2">{item.name}</td>
-                  <td className="font-mono text-sm text-muted text-right py-2">
+                <tr key={i} className={i % 2 === 1 ? "bg-surface-raised" : ""}>
+                  <td className="font-body text-sm text-paper py-2 px-3">{item.name}</td>
+                  <td className="font-mono text-sm text-muted text-right py-2 px-3">
                     {item.qty}
                   </td>
-                  <td className="font-mono text-sm text-muted text-right py-2">
+                  <td className="font-mono text-sm text-muted text-right py-2 px-3">
                     {item.price.toFixed(2)}
                   </td>
-                  <td className="font-mono text-sm text-paper text-right py-2">
+                  <td className="font-mono text-sm text-paper text-right py-2 px-3">
                     {(item.price * item.qty).toFixed(2)}
                   </td>
                 </tr>
@@ -163,15 +134,59 @@ export default async function InvoiceViewPage({
             </tbody>
           </table>
 
-          <div className="flex justify-end">
-            <div className="w-48">
+          <div className="flex justify-end mb-10">
+            <div className="w-52 border-t border-line pt-3">
               <div className="flex justify-between font-body text-sm">
-                <span className="text-muted">Total</span>
+                <span className="text-muted">Total due</span>
                 <span className="font-mono text-copper-bright text-base">
                   MVR {inv.subtotal.toFixed(2)}
                 </span>
               </div>
             </div>
+          </div>
+
+          <div className="border-t border-line pt-6 mb-6">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-muted mb-2">
+              Terms &amp; conditions
+            </p>
+            <p className="font-body text-xs text-muted leading-relaxed">{TERMS}</p>
+          </div>
+
+          {hasBank && (
+            <div className="mb-8">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-muted mb-2">
+                Payment details
+              </p>
+              <div className="space-y-2">
+                {s?.bml_account_number && (
+                  <p className="font-body text-xs text-paper">
+                    <span className="font-medium">BML</span>
+                    {s.bml_account_name ? ` — ${s.bml_account_name}` : ""}{" "}
+                    <span className="font-mono text-copper-bright">
+                      {s.bml_account_number}
+                    </span>
+                  </p>
+                )}
+                {s?.mib_account_number && (
+                  <p className="font-body text-xs text-paper">
+                    <span className="font-medium">MIB</span>
+                    {s.mib_account_name ? ` — ${s.mib_account_name}` : ""}{" "}
+                    <span className="font-mono text-copper-bright">
+                      {s.mib_account_number}
+                    </span>
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="border-t border-line pt-4 flex items-center justify-between flex-wrap gap-2">
+            <p className="font-body text-xs text-muted">
+              Prepared by: {s?.invoice_prepared_by || "E Tronic Sales Team"}
+            </p>
+            <p className="font-body text-xs text-muted">
+              For {s?.business_name || "E Tronic"}
+            </p>
           </div>
         </div>
       </main>

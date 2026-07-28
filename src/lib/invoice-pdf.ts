@@ -9,6 +9,9 @@ const MUTED: [number, number, number] = [130, 126, 118];
 const HAIRLINE: [number, number, number] = [230, 226, 218];
 const ZEBRA: [number, number, number] = [250, 248, 244];
 
+const TERMS =
+  "Payment is due upon receipt of this invoice unless otherwise agreed. For bank transfers, please use the invoice number as the payment reference. Items are covered under the relevant manufacturer's warranty where applicable; E Tronic is not liable for damage caused by misuse, unauthorised repair, or normal wear. Please retain this invoice as proof of purchase for any service or warranty claim.";
+
 function loadImageAsDataUrl(src: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -32,14 +35,13 @@ export async function downloadInvoicePdf(invoice: Invoice, settings: Settings | 
 
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
-  const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 48;
   let y = margin;
 
   // Logo, top-left
   if (logo) {
     const logoW = 130;
-    const logoH = logoW * (332 / 1155); // matches the cropped asset's aspect ratio
+    const logoH = logoW * (332 / 1155);
     doc.addImage(logo, "PNG", margin, y, logoW, logoH);
     y += logoH + 14;
   } else {
@@ -101,7 +103,6 @@ export async function downloadInvoicePdf(invoice: Invoice, settings: Settings | 
   y += 26;
 
   // Bill to
-  const billToY = y;
   doc.setFont("helvetica", "bold");
   doc.setFontSize(8);
   doc.setTextColor(...MUTED);
@@ -124,57 +125,11 @@ export async function downloadInvoicePdf(invoice: Invoice, settings: Settings | 
   if (invoice.customer_address) {
     doc.setFontSize(9);
     doc.setTextColor(...MUTED);
-    doc.text(invoice.customer_address, margin, y, { maxWidth: 240 });
+    doc.text(invoice.customer_address, margin, y, { maxWidth: 260 });
     y += 20;
   }
 
-  // Payment details, top-right of the same row
-  const hasBank = settings?.bml_account_number || settings?.mib_account_number;
-  if (hasBank) {
-    let py = billToY;
-    const px = pageWidth - margin;
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8);
-    doc.setTextColor(...MUTED);
-    doc.text("PAYMENT DETAILS", px, py, { align: "right" });
-    py += 16;
-
-    if (settings?.bml_account_number) {
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(9);
-      doc.setTextColor(...INK);
-      doc.text("BML", px, py, { align: "right" });
-      py += 12;
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(9);
-      doc.setTextColor(...MUTED);
-      if (settings.bml_account_name) {
-        doc.text(settings.bml_account_name, px, py, { align: "right" });
-        py += 12;
-      }
-      doc.text(settings.bml_account_number, px, py, { align: "right" });
-      py += 16;
-    }
-    if (settings?.mib_account_number) {
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(9);
-      doc.setTextColor(...INK);
-      doc.text("MIB", px, py, { align: "right" });
-      py += 12;
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(9);
-      doc.setTextColor(...MUTED);
-      if (settings.mib_account_name) {
-        doc.text(settings.mib_account_name, px, py, { align: "right" });
-        py += 12;
-      }
-      doc.text(settings.mib_account_number, px, py, { align: "right" });
-      py += 16;
-    }
-    y = Math.max(y, py);
-  }
-
-  y += 16;
+  y += 10;
 
   // Table
   const col = {
@@ -235,13 +190,85 @@ export async function downloadInvoicePdf(invoice: Invoice, settings: Settings | 
     doc.text("PAID", pageWidth - margin - 100, margin + 110, { angle: 18 });
   }
 
-  // Footer
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(8.5);
-  doc.setTextColor(...MUTED);
-  doc.text("Thank you for your business.", margin, pageHeight - 48);
+  y += 40;
+
+  // Terms & Conditions
   doc.setDrawColor(...HAIRLINE);
-  doc.line(margin, pageHeight - 60, pageWidth - margin, pageHeight - 60);
+  doc.line(margin, y, pageWidth - margin, y);
+  y += 20;
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  doc.setTextColor(...MUTED);
+  doc.text("TERMS & CONDITIONS", margin, y);
+  y += 14;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.setTextColor(...MUTED);
+  const termsLines = doc.splitTextToSize(TERMS, pageWidth - margin * 2);
+  doc.text(termsLines, margin, y);
+  y += termsLines.length * 11 + 20;
+
+  // Payment details
+  const hasBank = settings?.bml_account_number || settings?.mib_account_number;
+  if (hasBank) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(...MUTED);
+    doc.text("PAYMENT DETAILS", margin, y);
+    y += 16;
+
+    if (settings?.bml_account_number) {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(...INK);
+      doc.text(
+        `BML${settings.bml_account_name ? ` — ${settings.bml_account_name}` : ""}`,
+        margin,
+        y
+      );
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(...MUTED);
+      doc.text(settings.bml_account_number, margin + 200, y);
+      y += 15;
+    }
+    if (settings?.mib_account_number) {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(...INK);
+      doc.text(
+        `MIB${settings.mib_account_name ? ` — ${settings.mib_account_name}` : ""}`,
+        margin,
+        y
+      );
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(...MUTED);
+      doc.text(settings.mib_account_number, margin + 200, y);
+      y += 15;
+    }
+    y += 20;
+  }
+
+  // Signature / prepared-by footer
+  doc.setDrawColor(...HAIRLINE);
+  doc.line(margin, y, pageWidth - margin, y);
+  y += 18;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.setTextColor(...MUTED);
+  doc.text(
+    `Prepared by: ${settings?.invoice_prepared_by || "E Tronic Sales Team"}`,
+    margin,
+    y
+  );
+  doc.text(`For ${settings?.business_name || "E Tronic"}`, pageWidth - margin, y, {
+    align: "right",
+  });
+  y += 20;
+  doc.setFont("helvetica", "italic");
+  doc.text("Thank you for your business.", margin, y);
 
   doc.save(`etronic-invoice-${invoice.invoice_no}.pdf`);
 }

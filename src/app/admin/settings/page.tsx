@@ -67,6 +67,17 @@ export default async function SettingsPage({
 
           <fieldset className="space-y-4">
             <legend className="font-display text-sm tracking-[0.2em] uppercase text-copper-bright mb-2">
+              Invoices
+            </legend>
+            <Field
+              label="Prepared by (shown on invoices)"
+              name="invoice_prepared_by"
+              defaultValue={settings?.invoice_prepared_by ?? "E Tronic Sales Team"}
+            />
+          </fieldset>
+
+          <fieldset className="space-y-4">
+            <legend className="font-display text-sm tracking-[0.2em] uppercase text-copper-bright mb-2">
               BML transfer
             </legend>
             <Field label="Account name" name="bml_account_name" defaultValue={settings?.bml_account_name ?? ""} />

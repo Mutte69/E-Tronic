@@ -16,6 +16,7 @@ export type Settings = {
   id: number;
   business_name: string;
   registration_number: string | null;
+  invoice_prepared_by: string | null;
   phone: string | null;
   whatsapp: string | null;
   address: string | null;
