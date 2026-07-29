@@ -17,13 +17,16 @@ export default async function HomePage({
   const [{ data: products }, { data: settings }] = await Promise.all([
     supabase
       .from("products")
-      .select("*")
+      .select("id,name,code,caption,price,stock_qty,image_url,featured,sort_order,in_stock,created_at,updated_at")
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: false }),
     supabase.from("settings").select("*").eq("id", 1).single(),
   ]);
 
-  const allProducts = (products ?? []) as Product[];
+  const allProducts = ((products ?? []) as Omit<Product, "cost_price">[]).map((p) => ({
+    ...p,
+    cost_price: null,
+  })) as Product[];
   const featured = allProducts.filter((p) => p.featured);
   const rest = allProducts.filter((p) => !p.featured);
 
@@ -63,6 +66,25 @@ export default async function HomePage({
         </div>
       </section>
 
+      {/* Services */}
+      <section className="mx-auto max-w-6xl px-5 sm:px-8 py-10">
+        <SectionLabel>What we do</SectionLabel>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+          <ServiceCard
+            title="Sales"
+            body="New and quality electronics, priced fairly, with stock updated here as it comes in."
+          />
+          <ServiceCard
+            title="Repair & service"
+            body="Diagnostics and repairs on the devices we sell and beyond — bring it in or message us the issue."
+          />
+          <ServiceCard
+            title="Support"
+            body="Questions about a part, a price, or what fits your setup — reach out on WhatsApp any time."
+          />
+        </div>
+      </section>
+
       {/* Featured */}
       {featured.length > 0 && (
         <section className="mx-auto max-w-6xl px-5 sm:px-8 py-6">
@@ -98,6 +120,15 @@ export default async function HomePage({
       <Footer settings={(settings as Settings) ?? null} />
       <CartDrawer />
     </>
+  );
+}
+
+function ServiceCard({ title, body }: { title: string; body: string }) {
+  return (
+    <div className="border border-line rounded-lg bg-surface p-5">
+      <p className="font-display text-sm text-copper-bright mb-2">{title}</p>
+      <p className="font-body text-sm text-muted leading-relaxed">{body}</p>
+    </div>
   );
 }
 

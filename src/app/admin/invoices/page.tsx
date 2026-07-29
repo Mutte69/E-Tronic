@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import AdminNav from "@/components/AdminNav";
 import DeleteInvoiceButton from "@/components/DeleteInvoiceButton";
+import { normalizeInvoices } from "@/lib/normalize";
 import type { Invoice } from "@/lib/types";
 
 export const revalidate = 0;
@@ -13,7 +14,7 @@ export default async function InvoicesPage() {
     .select("*")
     .order("created_at", { ascending: false });
 
-  const invoices = (data ?? []) as Invoice[];
+  const invoices = normalizeInvoices((data ?? []) as Invoice[]);
 
   return (
     <div className="min-h-screen">

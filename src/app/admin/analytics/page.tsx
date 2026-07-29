@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import AdminNav from "@/components/AdminNav";
 import ReportDownloads from "@/components/ReportDownloads";
 import { invoiceProfit, invoiceDiscount } from "@/lib/reports";
+import { normalizeInvoices } from "@/lib/normalize";
 import type { Invoice, Order, Settings } from "@/lib/types";
 
 export const revalidate = 0;
@@ -28,7 +29,7 @@ export default async function AnalyticsPage() {
     supabase.from("settings").select("*").eq("id", 1).single(),
   ]);
 
-  const invoices = (invoiceData ?? []) as Invoice[];
+  const invoices = normalizeInvoices((invoiceData ?? []) as Invoice[]);
   const orders = (orderData ?? []) as Order[];
   const settings = (settingsData as Settings) ?? null;
   const paid = invoices.filter((i) => i.status === "paid" && i.paid_at);

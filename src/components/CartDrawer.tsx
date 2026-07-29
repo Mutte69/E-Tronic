@@ -9,6 +9,7 @@ export default function CartDrawer() {
   const { items, removeItem, setQty, subtotal, count, clear } = useCart();
   const [open, setOpen] = useState(false);
   const [checkingOut, setCheckingOut] = useState(false);
+  const [renderedAt, setRenderedAt] = useState(0);
 
   return (
     <>
@@ -105,7 +106,10 @@ export default function CartDrawer() {
 
                 {!checkingOut ? (
                   <button
-                    onClick={() => setCheckingOut(true)}
+                    onClick={() => {
+                      setCheckingOut(true);
+                      setRenderedAt(Date.now());
+                    }}
                     className="w-full rounded-md bg-copper hover:bg-copper-bright transition-colors text-ink font-body text-sm font-medium py-2.5"
                   >
                     Order via WhatsApp
@@ -117,6 +121,18 @@ export default function CartDrawer() {
                     className="space-y-3"
                   >
                     <input type="hidden" name="items" value={JSON.stringify(items)} />
+                    <input type="hidden" name="form_rendered_at" value={renderedAt} />
+                    {/* honeypot — real customers never see or fill this */}
+                    <div className="absolute -left-[9999px]" aria-hidden="true">
+                      <label htmlFor="website">Leave this field empty</label>
+                      <input
+                        id="website"
+                        name="website"
+                        type="text"
+                        tabIndex={-1}
+                        autoComplete="off"
+                      />
+                    </div>
                     <div>
                       <label className="block font-body text-xs text-muted mb-1">
                         Your name

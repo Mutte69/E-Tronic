@@ -2,11 +2,12 @@
 
 import { useCart } from "@/lib/cart-context";
 import type { Product } from "@/lib/types";
+import { isInStock } from "@/lib/stock";
 
 export default function AddToCartButton({ product }: { product: Product }) {
   const { addItem } = useCart();
 
-  if (!product.in_stock) {
+  if (!isInStock(product)) {
     return (
       <span className="font-mono text-[11px] text-muted uppercase tracking-wide">
         Unavailable

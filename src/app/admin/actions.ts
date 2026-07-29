@@ -52,6 +52,22 @@ async function uploadImageIfPresent(
   return publicUrl;
 }
 
+function storagePathFromUrl(url: string | null): string | null {
+  if (!url) return null;
+  const marker = "/product-images/";
+  const i = url.indexOf(marker);
+  return i === -1 ? null : url.slice(i + marker.length);
+}
+
+async function deleteStorageImage(
+  supabase: ReturnType<typeof createClient>,
+  imageUrl: string | null
+) {
+  const path = storagePathFromUrl(imageUrl);
+  if (!path) return;
+  await supabase.storage.from("product-images").remove([path]);
+}
+
 export async function createProduct(formData: FormData) {
   const supabase = createClient();
   const imageUrl = await uploadImageIfPresent(supabase, formData);
@@ -63,6 +79,9 @@ export async function createProduct(formData: FormData) {
     price: parsePrice(formData.get("price")),
     cost_price: formData.get("cost_price")
       ? parsePrice(formData.get("cost_price"))
+      : null,
+    stock_qty: formData.get("stock_qty")
+      ? Math.max(0, Math.round(parsePrice(formData.get("stock_qty"))))
       : null,
     image_url: imageUrl,
     featured: formData.get("featured") === "on",
@@ -88,11 +107,22 @@ export async function updateProduct(id: string, formData: FormData) {
     cost_price: formData.get("cost_price")
       ? parsePrice(formData.get("cost_price"))
       : null,
+    stock_qty: formData.get("stock_qty")
+      ? Math.max(0, Math.round(parsePrice(formData.get("stock_qty"))))
+      : null,
     featured: formData.get("featured") === "on",
     in_stock: formData.get("in_stock") === "on",
     updated_at: new Date().toISOString(),
   };
-  if (imageUrl) update.image_url = imageUrl;
+  if (imageUrl) {
+    const { data: existing } = await supabase
+      .from("products")
+      .select("image_url")
+      .eq("id", id)
+      .single();
+    update.image_url = imageUrl;
+    if (existing?.image_url) await deleteStorageImage(supabase, existing.image_url);
+  }
 
   const { error } = await supabase.from("products").update(update).eq("id", id);
   if (error) throw new Error(error.message);
@@ -104,8 +134,16 @@ export async function updateProduct(id: string, formData: FormData) {
 
 export async function deleteProduct(id: string) {
   const supabase = createClient();
+  const { data: existing } = await supabase
+    .from("products")
+    .select("image_url")
+    .eq("id", id)
+    .single();
+
   const { error } = await supabase.from("products").delete().eq("id", id);
   if (error) throw new Error(error.message);
+
+  if (existing?.image_url) await deleteStorageImage(supabase, existing.image_url);
 
   revalidatePath("/");
   revalidatePath("/admin");
@@ -141,6 +179,14 @@ export async function markOrderInvoiced(orderId: string) {
   revalidatePath("/admin/orders");
 }
 
+export async function deleteOrder(id: string) {
+  const supabase = createClient();
+  const { error } = await supabase.from("orders").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/admin/orders");
+}
+
 export async function createInvoiceFromOrder(orderId: string) {
   const supabase = createClient();
 
@@ -167,6 +213,7 @@ export async function createInvoiceFromOrder(orderId: string) {
   const items = (
     order.items as { product_id: string; name: string; price: number; qty: number }[]
   ).map((i) => ({
+    product_id: i.product_id,
     name: i.name,
     price: i.price,
     qty: i.qty,
@@ -200,7 +247,7 @@ export async function createInvoice(formData: FormData) {
   const supabase = createClient();
 
   const itemsRaw = String(formData.get("items") ?? "[]");
-  let items: { name: string; price: number; cost_price: number | null; qty: number }[] = [];
+  let items: { product_id: string | null; name: string; price: number; cost_price: number | null; qty: number }[] = [];
   try {
     items = JSON.parse(itemsRaw);
   } catch {
@@ -245,11 +292,39 @@ export async function createInvoice(formData: FormData) {
 
 export async function toggleInvoicePaid(id: string, next: boolean) {
   const supabase = createClient();
+
+  const { data: invoice } = await supabase
+    .from("invoices")
+    .select("items")
+    .eq("id", id)
+    .single();
+
   const { error } = await supabase
     .from("invoices")
     .update({ status: next ? "paid" : "unpaid", paid_at: next ? new Date().toISOString() : null })
     .eq("id", id);
   if (error) throw new Error(error.message);
+
+  const items = (invoice?.items ?? []) as { product_id?: string | null; qty: number }[];
+  const productIds = items.map((i) => i.product_id).filter((id): id is string => !!id);
+
+  if (productIds.length > 0) {
+    const { data: products } = await supabase
+      .from("products")
+      .select("id, stock_qty")
+      .in("id", productIds);
+
+    for (const item of items) {
+      if (!item.product_id) continue;
+      const product = products?.find((p) => p.id === item.product_id);
+      if (!product || product.stock_qty == null) continue;
+      const delta = next ? -item.qty : item.qty;
+      const newQty = Math.max(0, product.stock_qty + delta);
+      await supabase.from("products").update({ stock_qty: newQty }).eq("id", item.product_id);
+    }
+    revalidatePath("/");
+    revalidatePath("/admin");
+  }
 
   revalidatePath("/admin/invoices");
   revalidatePath(`/admin/invoices/${id}`);

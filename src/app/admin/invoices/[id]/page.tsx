@@ -6,6 +6,7 @@ import DownloadInvoiceButton from "@/components/DownloadInvoiceButton";
 import DeleteInvoiceButton from "@/components/DeleteInvoiceButton";
 import { toggleInvoicePaid } from "@/app/admin/actions";
 import SubmitButton from "@/components/SubmitButton";
+import { normalizeInvoice } from "@/lib/normalize";
 import type { Invoice, Settings } from "@/lib/types";
 
 export const revalidate = 0;
@@ -25,7 +26,7 @@ export default async function InvoiceViewPage({
   ]);
 
   if (!invoice) notFound();
-  const inv = invoice as Invoice;
+  const inv = normalizeInvoice(invoice as Invoice);
   const s = (settings as Settings) ?? null;
   const isPaid = inv.status === "paid";
   const hasBank = s?.bml_account_number || s?.mib_account_number;

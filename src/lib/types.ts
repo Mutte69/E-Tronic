@@ -5,6 +5,7 @@ export type Product = {
   caption: string | null;
   price: number;
   cost_price: number | null;
+  stock_qty: number | null;
   image_url: string | null;
   featured: boolean;
   sort_order: number;
@@ -36,6 +37,7 @@ export type CartLineItem = {
 };
 
 export type InvoiceLineItem = {
+  product_id?: string | null;
   name: string;
   price: number;
   cost_price: number | null;

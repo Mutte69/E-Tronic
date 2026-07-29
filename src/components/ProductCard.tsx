@@ -4,9 +4,12 @@ import { useState } from "react";
 import Image from "next/image";
 import type { Product } from "@/lib/types";
 import AddToCartButton from "@/components/AddToCartButton";
+import { isInStock, lowStockLabel } from "@/lib/stock";
 
 export default function ProductCard({ product }: { product: Product }) {
   const [open, setOpen] = useState(false);
+  const inStock = isInStock(product);
+  const lowStock = lowStockLabel(product);
 
   return (
     <>
@@ -37,12 +40,17 @@ export default function ProductCard({ product }: { product: Product }) {
               no image
             </div>
           )}
-          {!product.in_stock && (
+          {!inStock && (
             <div className="absolute inset-0 bg-ink/70 flex items-center justify-center">
               <span className="font-mono text-xs tracking-widest uppercase text-muted">
                 Out of stock
               </span>
             </div>
+          )}
+          {inStock && lowStock && (
+            <span className="absolute bottom-2 right-2 z-10 font-mono text-[10px] tracking-wide uppercase bg-ink/80 text-copper-bright px-2 py-1 rounded-sm">
+              {lowStock}
+            </span>
           )}
         </div>
         <div className="p-4">

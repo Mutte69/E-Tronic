@@ -72,7 +72,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
-  const clear = () => setItems([]);
+  const clear = () => {
+    setItems([]);
+    try {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // storage unavailable, nothing more to do
+    }
+  };
 
   const subtotal = useMemo(
     () => items.reduce((sum, i) => sum + i.price * i.qty, 0),

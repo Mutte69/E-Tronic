@@ -81,6 +81,7 @@ export default function NewInvoiceForm({ products }: { products: Product[] }) {
     lines
       .filter((l) => l.name.trim())
       .map((l) => ({
+        product_id: l.product_id,
         name: l.name.trim(),
         price: parseFloat(l.price) || 0,
         cost_price: l.cost_price ? parseFloat(l.cost_price) : null,

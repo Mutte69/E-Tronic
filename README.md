@@ -105,3 +105,19 @@ item, the total, and their details — they just hit send.
 Repeat step 1.3 in Supabase (**Authentication > Users > Add user**) —
 no code changes needed.
 
+## Using a custom domain instead of railway.app
+
+The site currently lives at `*.up.railway.app`. To use your own domain
+(e.g. `etronic.mv`) instead:
+
+1. Buy the domain from any registrar (GoDaddy, Namecheap, dot.mv for
+   Maldivian domains, etc.)
+2. In Railway, open this service → **Settings → Networking → Custom
+   Domain** → enter your domain
+3. Railway gives you a CNAME record to add — go to your domain
+   registrar's DNS settings and add that record exactly as shown
+4. Wait for DNS to propagate (usually 10 minutes to a few hours) —
+   Railway will show the domain as verified once it's live
+5. Update `metadataBase` in `src/app/layout.tsx` to your new domain, so
+   link previews (WhatsApp, etc.) use the right URL
+

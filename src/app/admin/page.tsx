@@ -69,6 +69,14 @@ export default async function AdminDashboard() {
                     {p.cost_price != null && (
                       <span className="text-muted"> · cost {p.cost_price.toFixed(2)}</span>
                     )}
+                    {p.stock_qty != null && (
+                      <span
+                        className={p.stock_qty <= 3 ? "text-copper-bright" : "text-muted"}
+                      >
+                        {" "}
+                        · {p.stock_qty} in stock
+                      </span>
+                    )}
                   </p>
                 </div>
 

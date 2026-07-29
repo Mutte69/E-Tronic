@@ -189,6 +189,27 @@ export default function ProductForm({
         )}
       </div>
 
+      <div>
+        <label className="block font-body text-xs text-muted mb-1" htmlFor="stock_qty">
+          Stock on hand <span className="text-muted">(optional)</span>
+        </label>
+        <input
+          id="stock_qty"
+          name="stock_qty"
+          type="number"
+          step="1"
+          min="0"
+          defaultValue={product?.stock_qty ?? ""}
+          placeholder="Leave empty if you don't track a count"
+          className="w-40 rounded-md bg-surface-raised border border-line px-3 py-2 font-mono text-sm text-paper placeholder:text-muted/50 focus:border-copper outline-none"
+        />
+        <p className="font-body text-[11px] text-muted mt-1">
+          If you track a count here, it goes down automatically when an
+          order for this item is marked paid, and the site shows it as sold
+          out at zero. Leave blank to just use the "In stock" switch below.
+        </p>
+      </div>
+
       <div className="flex items-center gap-6">
         <label className="flex items-center gap-2 font-body text-sm text-paper">
           <input

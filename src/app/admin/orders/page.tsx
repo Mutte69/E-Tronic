@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import AdminNav from "@/components/AdminNav";
 import { createInvoiceFromOrder } from "@/app/admin/actions";
 import SubmitButton from "@/components/SubmitButton";
+import DeleteOrderButton from "@/components/DeleteOrderButton";
 import type { Order } from "@/lib/types";
 
 export const revalidate = 0;
@@ -83,6 +84,7 @@ function OrderRow({ order }: { order: Order }) {
               Invoiced
             </span>
           )}
+          <DeleteOrderButton id={order.id} customerName={order.customer_name} />
         </div>
       </div>
       <ul className="font-body text-xs text-muted space-y-0.5">

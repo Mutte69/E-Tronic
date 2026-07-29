@@ -11,6 +11,7 @@ create table if not exists products (
   caption text,
   price numeric(10,2) not null default 0,
   cost_price numeric(10,2),
+  stock_qty int,
   image_url text,
   featured boolean not null default false,
   sort_order int not null default 0,
@@ -21,6 +22,7 @@ create table if not exists products (
 
 alter table products add column if not exists cost_price numeric(10,2);
 alter table products add column if not exists code text;
+alter table products add column if not exists stock_qty int;
 
 alter table products enable row level security;
 

@@ -3,9 +3,23 @@ import "./globals.css";
 import { CartProvider } from "@/lib/cart-context";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://e-tronic-production.up.railway.app"),
   title: "E Tronic — Electronics Sales & Service",
   description:
     "E Tronic — electronics sales and repair service in the Maldives.",
+  openGraph: {
+    title: "E Tronic — Electronics Sales & Service",
+    description:
+      "E Tronic — electronics sales and repair service in the Maldives.",
+    images: ["/etronic-mark.png"],
+  },
+  twitter: {
+    card: "summary",
+    title: "E Tronic — Electronics Sales & Service",
+    description:
+      "E Tronic — electronics sales and repair service in the Maldives.",
+    images: ["/etronic-mark.png"],
+  },
 };
 
 export default function RootLayout({
