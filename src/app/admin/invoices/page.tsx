@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import AdminNav from "@/components/AdminNav";
+import DeleteInvoiceButton from "@/components/DeleteInvoiceButton";
 import type { Invoice } from "@/lib/types";
 
 export const revalidate = 0;
@@ -33,32 +34,37 @@ export default async function InvoicesPage() {
         ) : (
           <div className="space-y-2">
             {invoices.map((inv) => (
-              <Link
+              <div
                 key={inv.id}
-                href={`/admin/invoices/${inv.id}`}
-                className="flex items-center justify-between border border-line rounded-lg bg-surface p-4 hover:border-copper/50 transition-colors"
+                className="flex items-center gap-3 border border-line rounded-lg bg-surface p-4 hover:border-copper/50 transition-colors"
               >
-                <div>
-                  <p className="font-mono text-xs text-muted">
-                    #{inv.invoice_no}
-                  </p>
-                  <p className="font-body text-sm text-paper">{inv.customer_name}</p>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="font-mono text-sm text-copper-bright">
-                    MVR {inv.subtotal.toFixed(2)}
-                  </span>
-                  <span
-                    className={`font-mono text-[10px] uppercase tracking-wide px-2 py-1 rounded-sm border ${
-                      inv.status === "paid"
-                        ? "border-copper text-copper-bright"
-                        : "border-line text-muted"
-                    }`}
-                  >
-                    {inv.status}
-                  </span>
-                </div>
-              </Link>
+                <Link href={`/admin/invoices/${inv.id}`} className="flex-1 min-w-0 flex items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="font-mono text-xs text-muted">
+                      #{inv.invoice_no}
+                      {inv.discount_type !== "none" && (
+                        <span className="ml-2 text-copper-bright">discount</span>
+                      )}
+                    </p>
+                    <p className="font-body text-sm text-paper truncate">{inv.customer_name}</p>
+                  </div>
+                  <div className="flex items-center gap-4 shrink-0">
+                    <span className="font-mono text-sm text-copper-bright">
+                      MVR {inv.total.toFixed(2)}
+                    </span>
+                    <span
+                      className={`font-mono text-[10px] uppercase tracking-wide px-2 py-1 rounded-sm border ${
+                        inv.status === "paid"
+                          ? "border-copper text-copper-bright"
+                          : "border-line text-muted"
+                      }`}
+                    >
+                      {inv.status}
+                    </span>
+                  </div>
+                </Link>
+                <DeleteInvoiceButton id={inv.id} invoiceNo={inv.invoice_no} />
+              </div>
             ))}
           </div>
         )}

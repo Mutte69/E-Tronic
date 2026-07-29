@@ -171,16 +171,42 @@ export async function downloadInvoicePdf(invoice: Invoice, settings: Settings | 
 
   doc.setDrawColor(...HAIRLINE);
   doc.line(margin, y, pageWidth - margin, y);
-  y += 30;
+  y += 24;
 
-  // Total
+  // Totals
+  const hasDiscount = invoice.discount_type !== "none" && invoice.subtotal !== invoice.total;
+  if (hasDiscount) {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(...MUTED);
+    doc.text("Subtotal", col.price, y, { align: "right" });
+    doc.setTextColor(...INK);
+    doc.text(`MVR ${invoice.subtotal.toFixed(2)}`, col.total - 10, y, { align: "right" });
+    y += 15;
+
+    const discountLabel =
+      invoice.discount_type === "percent"
+        ? `Discount (${invoice.discount_value}%)`
+        : "Discount";
+    doc.setTextColor(...MUTED);
+    doc.text(discountLabel, col.price, y, { align: "right" });
+    doc.setTextColor(...COPPER);
+    doc.text(
+      `− MVR ${(invoice.subtotal - invoice.total).toFixed(2)}`,
+      col.total - 10,
+      y,
+      { align: "right" }
+    );
+    y += 20;
+  }
+
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
   doc.setTextColor(...MUTED);
   doc.text("TOTAL DUE", col.price, y, { align: "right" });
   doc.setFontSize(16);
   doc.setTextColor(...COPPER);
-  doc.text(`MVR ${invoice.subtotal.toFixed(2)}`, col.total - 10, y, { align: "right" });
+  doc.text(`MVR ${invoice.total.toFixed(2)}`, col.total - 10, y, { align: "right" });
 
   // PAID stamp
   if (invoice.status === "paid") {

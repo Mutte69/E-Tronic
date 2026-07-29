@@ -143,10 +143,18 @@ create table if not exists invoices (
   customer_address text,
   items jsonb not null default '[]',
   subtotal numeric(10,2) not null default 0,
+  discount_type text not null default 'none' check (discount_type in ('none', 'percent', 'fixed')),
+  discount_value numeric(10,2) not null default 0,
+  total numeric(10,2) not null default 0,
   status text not null default 'unpaid' check (status in ('unpaid', 'paid')),
   created_at timestamptz not null default now(),
   paid_at timestamptz
 );
+
+alter table invoices add column if not exists discount_type text not null default 'none' check (discount_type in ('none', 'percent', 'fixed'));
+alter table invoices add column if not exists discount_value numeric(10,2) not null default 0;
+alter table invoices add column if not exists total numeric(10,2) not null default 0;
+update invoices set total = subtotal where total = 0;
 
 alter table invoices enable row level security;
 

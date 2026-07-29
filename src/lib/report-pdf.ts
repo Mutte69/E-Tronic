@@ -67,10 +67,11 @@ export async function downloadReportPdf(
   y += 24;
 
   // Summary cards
-  const cardW = (pageWidth - margin * 2 - 20) / 3;
+  const cardW = (pageWidth - margin * 2 - 30) / 4;
   const margin_pct = report.sales > 0 ? (report.profit / report.sales) * 100 : 0;
   const cards = [
     { label: "SALES", value: `MVR ${report.sales.toFixed(2)}` },
+    { label: "DISCOUNTS GIVEN", value: `MVR ${report.discount.toFixed(2)}` },
     { label: "PROFIT", value: `MVR ${report.profit.toFixed(2)}` },
     { label: "MARGIN", value: `${margin_pct.toFixed(1)}%` },
   ];
@@ -83,7 +84,7 @@ export async function downloadReportPdf(
     doc.setTextColor(...MUTED);
     doc.text(c.label, cx + 10, y + 18);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(13);
+    doc.setFontSize(11);
     doc.setTextColor(...COPPER);
     doc.text(c.value, cx + 10, y + 38);
   });

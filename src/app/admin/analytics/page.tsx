@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import AdminNav from "@/components/AdminNav";
 import ReportDownloads from "@/components/ReportDownloads";
-import { invoiceProfit } from "@/lib/reports";
+import { invoiceProfit, invoiceDiscount } from "@/lib/reports";
 import type { Invoice, Order, Settings } from "@/lib/types";
 
 export const revalidate = 0;
@@ -33,7 +33,7 @@ export default async function AnalyticsPage() {
   const settings = (settingsData as Settings) ?? null;
   const paid = invoices.filter((i) => i.status === "paid" && i.paid_at);
 
-  const revenue = (inv: Invoice) => inv.subtotal;
+  const revenue = (inv: Invoice) => inv.total;
 
   const today = startOfDay(new Date());
   const thisMonthKey = monthKey(today);
@@ -54,6 +54,7 @@ export default async function AnalyticsPage() {
 
   const totalRevenue = paid.reduce((s, i) => s + revenue(i), 0);
   const totalProfit = paid.reduce((s, i) => s + invoiceProfit(i), 0);
+  const totalDiscounts = paid.reduce((s, i) => s + invoiceDiscount(i), 0);
   const totalMargin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
 
   // last 7 days: sales + profit, for the chart
@@ -144,6 +145,7 @@ export default async function AnalyticsPage() {
             value={`MVR ${totalProfit.toFixed(2)}`}
             sub={`${totalMargin.toFixed(1)}% margin`}
           />
+          <StatCard label="Discounts given" value={`MVR ${totalDiscounts.toFixed(2)}`} />
           <StatCard label="Total orders" value={String(orders.length)} />
           <StatCard label="Unpaid invoices" value={String(unpaidInvoices)} />
         </div>

@@ -62,6 +62,9 @@ export type Invoice = {
   customer_address: string | null;
   items: InvoiceLineItem[];
   subtotal: number;
+  discount_type: "none" | "percent" | "fixed";
+  discount_value: number;
+  total: number;
   status: "unpaid" | "paid";
   created_at: string;
   paid_at: string | null;

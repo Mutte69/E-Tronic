@@ -25,6 +25,8 @@ export default function NewInvoiceForm({ products }: { products: Product[] }) {
   const [lines, setLines] = useState<Line[]>([emptyLine()]);
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const [discountType, setDiscountType] = useState<"none" | "percent" | "fixed">("none");
+  const [discountValue, setDiscountValue] = useState("");
 
   const matches = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -90,6 +92,14 @@ export default function NewInvoiceForm({ products }: { products: Product[] }) {
     (sum, l) => sum + (parseFloat(l.price) || 0) * (parseInt(l.qty, 10) || 0),
     0
   );
+  const discountNum = parseFloat(discountValue) || 0;
+  const discountAmount =
+    discountType === "percent"
+      ? (subtotal * discountNum) / 100
+      : discountType === "fixed"
+      ? discountNum
+      : 0;
+  const total = Math.max(0, subtotal - discountAmount);
 
   return (
     <form action={createInvoice} className="space-y-6 max-w-2xl">
@@ -226,11 +236,55 @@ export default function NewInvoiceForm({ products }: { products: Product[] }) {
         </button>
       </fieldset>
 
-      <div className="flex items-center justify-between font-body text-sm border-t border-line pt-4">
-        <span className="text-muted">Total</span>
-        <span className="font-mono text-copper-bright text-base">
-          MVR {subtotal.toFixed(2)}
-        </span>
+      <fieldset className="space-y-3">
+        <legend className="font-display text-sm tracking-[0.2em] uppercase text-copper-bright mb-2">
+          Discount <span className="text-muted normal-case tracking-normal">(optional)</span>
+        </legend>
+        <div className="flex gap-3">
+          <select
+            name="discount_type"
+            value={discountType}
+            onChange={(e) => setDiscountType(e.target.value as typeof discountType)}
+            className="rounded-md bg-surface-raised border border-line px-3 py-2 font-body text-sm text-paper focus:border-copper outline-none"
+          >
+            <option value="none">No discount</option>
+            <option value="percent">Percent off</option>
+            <option value="fixed">Fixed amount off</option>
+          </select>
+          {discountType !== "none" && (
+            <input
+              name="discount_value"
+              type="number"
+              step="0.01"
+              min="0"
+              value={discountValue}
+              onChange={(e) => setDiscountValue(e.target.value)}
+              placeholder={discountType === "percent" ? "e.g. 10" : "e.g. 100"}
+              className="w-32 rounded-md bg-surface-raised border border-line px-3 py-2 font-mono text-sm text-paper placeholder:text-muted/50 focus:border-copper outline-none"
+            />
+          )}
+        </div>
+      </fieldset>
+
+      <div className="space-y-1 border-t border-line pt-4">
+        <div className="flex items-center justify-between font-body text-sm">
+          <span className="text-muted">Subtotal</span>
+          <span className="font-mono text-paper">MVR {subtotal.toFixed(2)}</span>
+        </div>
+        {discountType !== "none" && discountAmount > 0 && (
+          <div className="flex items-center justify-between font-body text-sm">
+            <span className="text-muted">Discount</span>
+            <span className="font-mono text-copper-bright">
+              − MVR {discountAmount.toFixed(2)}
+            </span>
+          </div>
+        )}
+        <div className="flex items-center justify-between font-body text-sm pt-1">
+          <span className="text-muted">Total due</span>
+          <span className="font-mono text-copper-bright text-base">
+            MVR {total.toFixed(2)}
+          </span>
+        </div>
       </div>
 
       <SubmitButton

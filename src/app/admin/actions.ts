@@ -182,6 +182,7 @@ export async function createInvoiceFromOrder(orderId: string) {
       customer_address: order.customer_address,
       items,
       subtotal: order.subtotal,
+      total: order.subtotal,
     })
     .select()
     .single();
@@ -208,6 +209,19 @@ export async function createInvoice(formData: FormData) {
 
   const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
 
+  const discountType = String(formData.get("discount_type") ?? "none");
+  const discountValue = parseFloat(String(formData.get("discount_value") ?? "0")) || 0;
+  const validDiscountType = ["none", "percent", "fixed"].includes(discountType)
+    ? discountType
+    : "none";
+  const discountAmount =
+    validDiscountType === "percent"
+      ? (subtotal * discountValue) / 100
+      : validDiscountType === "fixed"
+      ? discountValue
+      : 0;
+  const total = Math.max(0, subtotal - discountAmount);
+
   const { data: invoice, error } = await supabase
     .from("invoices")
     .insert({
@@ -216,6 +230,9 @@ export async function createInvoice(formData: FormData) {
       customer_address: String(formData.get("customer_address") ?? "").trim() || null,
       items,
       subtotal,
+      discount_type: validDiscountType,
+      discount_value: validDiscountType === "none" ? 0 : discountValue,
+      total,
     })
     .select()
     .single();
@@ -237,6 +254,16 @@ export async function toggleInvoicePaid(id: string, next: boolean) {
   revalidatePath("/admin/invoices");
   revalidatePath(`/admin/invoices/${id}`);
   revalidatePath("/admin/analytics");
+}
+
+export async function deleteInvoice(id: string) {
+  const supabase = createClient();
+  const { error } = await supabase.from("invoices").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/admin/invoices");
+  revalidatePath("/admin/analytics");
+  redirect("/admin/invoices");
 }
 
 export async function updateSettings(formData: FormData) {

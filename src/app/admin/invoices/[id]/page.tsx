@@ -3,6 +3,7 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import AdminNav from "@/components/AdminNav";
 import DownloadInvoiceButton from "@/components/DownloadInvoiceButton";
+import DeleteInvoiceButton from "@/components/DeleteInvoiceButton";
 import { toggleInvoicePaid } from "@/app/admin/actions";
 import SubmitButton from "@/components/SubmitButton";
 import type { Invoice, Settings } from "@/lib/types";
@@ -52,6 +53,11 @@ export default async function InvoiceViewPage({
                 {isPaid ? "Mark as unpaid" : "Mark as paid"}
               </SubmitButton>
             </form>
+            <DeleteInvoiceButton
+              id={inv.id}
+              invoiceNo={inv.invoice_no}
+              className="rounded-md border border-line text-muted hover:text-copper-bright hover:border-copper/50 transition-colors font-body text-sm px-4 py-2"
+            />
           </div>
         </div>
 
@@ -135,11 +141,26 @@ export default async function InvoiceViewPage({
           </table>
 
           <div className="flex justify-end mb-10">
-            <div className="w-52 border-t border-line pt-3">
+            <div className="w-56 border-t border-line pt-3 space-y-1.5">
               <div className="flex justify-between font-body text-sm">
+                <span className="text-muted">Subtotal</span>
+                <span className="font-mono text-paper">MVR {inv.subtotal.toFixed(2)}</span>
+              </div>
+              {inv.discount_type !== "none" && (
+                <div className="flex justify-between font-body text-sm">
+                  <span className="text-muted">
+                    Discount
+                    {inv.discount_type === "percent" ? ` (${inv.discount_value}%)` : ""}
+                  </span>
+                  <span className="font-mono text-copper-bright">
+                    − MVR {(inv.subtotal - inv.total).toFixed(2)}
+                  </span>
+                </div>
+              )}
+              <div className="flex justify-between font-body text-sm pt-1">
                 <span className="text-muted">Total due</span>
                 <span className="font-mono text-copper-bright text-base">
-                  MVR {inv.subtotal.toFixed(2)}
+                  MVR {inv.total.toFixed(2)}
                 </span>
               </div>
             </div>

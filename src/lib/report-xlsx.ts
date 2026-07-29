@@ -11,6 +11,7 @@ export function downloadReportXlsx(report: Report, title: string) {
     [report.label],
     [],
     ["Sales (MVR)", report.sales.toFixed(2)],
+    ["Discounts given (MVR)", report.discount.toFixed(2)],
     ["Profit (MVR)", report.profit.toFixed(2)],
     ["Margin (%)", margin.toFixed(1)],
     ["Invoices", report.rows.length],
@@ -23,6 +24,7 @@ export function downloadReportXlsx(report: Report, title: string) {
     Customer: r.customer_name,
     Items: r.items,
     "Sales (MVR)": r.sales,
+    "Discount (MVR)": r.discount,
     "Profit (MVR)": r.profit,
   }));
   const detailSheet = XLSX.utils.json_to_sheet(detailRows);
@@ -32,6 +34,7 @@ export function downloadReportXlsx(report: Report, title: string) {
     { wch: 20 },
     { wch: 40 },
     { wch: 12 },
+    { wch: 14 },
     { wch: 12 },
   ];
 
