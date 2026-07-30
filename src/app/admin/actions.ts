@@ -502,6 +502,23 @@ export async function updateSettings(formData: FormData) {
       business_name: String(formData.get("business_name") ?? "").trim() || "E Tronic",
       registration_number: String(formData.get("registration_number") ?? "").trim() || null,
       invoice_prepared_by: String(formData.get("invoice_prepared_by") ?? "").trim() || "E Tronic Sales Team",
+      hero_eyebrow: String(formData.get("hero_eyebrow") ?? "").trim() || "Male', Maldives",
+      hero_heading: String(formData.get("hero_heading") ?? "").trim() || "Electronics, sold and serviced right.",
+      hero_subtext:
+        String(formData.get("hero_subtext") ?? "").trim() ||
+        "Devices, parts, and repairs from E Tronic. Reach out below for stock, pricing, or a service booking.",
+      service_1_title: String(formData.get("service_1_title") ?? "").trim() || "Sales",
+      service_1_body:
+        String(formData.get("service_1_body") ?? "").trim() ||
+        "New and quality electronics, priced fairly, with stock updated here as it comes in.",
+      service_2_title: String(formData.get("service_2_title") ?? "").trim() || "Repair & service",
+      service_2_body:
+        String(formData.get("service_2_body") ?? "").trim() ||
+        "Diagnostics and repairs on the devices we sell and beyond — bring it in or message us the issue.",
+      service_3_title: String(formData.get("service_3_title") ?? "").trim() || "Support",
+      service_3_body:
+        String(formData.get("service_3_body") ?? "").trim() ||
+        "Questions about a part, a price, or what fits your setup — reach out on WhatsApp any time.",
       phone: String(formData.get("phone") ?? "").trim() || null,
       whatsapp: String(formData.get("whatsapp") ?? "").trim() || null,
       address: String(formData.get("address") ?? "").trim() || null,

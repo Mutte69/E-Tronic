@@ -45,6 +45,15 @@ create table if not exists settings (
   business_name text not null default 'E Tronic',
   registration_number text,
   invoice_prepared_by text default 'E Tronic Sales Team',
+  hero_eyebrow text default 'Male'', Maldives',
+  hero_heading text default 'Electronics, sold and serviced right.',
+  hero_subtext text default 'Devices, parts, and repairs from E Tronic. Reach out below for stock, pricing, or a service booking.',
+  service_1_title text default 'Sales',
+  service_1_body text default 'New and quality electronics, priced fairly, with stock updated here as it comes in.',
+  service_2_title text default 'Repair & service',
+  service_2_body text default 'Diagnostics and repairs on the devices we sell and beyond — bring it in or message us the issue.',
+  service_3_title text default 'Support',
+  service_3_body text default 'Questions about a part, a price, or what fits your setup — reach out on WhatsApp any time.',
   phone text,
   whatsapp text,
   address text,
@@ -61,6 +70,15 @@ insert into settings (id, business_name) values (1, 'E Tronic')
 
 alter table settings add column if not exists registration_number text;
 alter table settings add column if not exists invoice_prepared_by text default 'E Tronic Sales Team';
+alter table settings add column if not exists hero_eyebrow text default 'Male'', Maldives';
+alter table settings add column if not exists hero_heading text default 'Electronics, sold and serviced right.';
+alter table settings add column if not exists hero_subtext text default 'Devices, parts, and repairs from E Tronic. Reach out below for stock, pricing, or a service booking.';
+alter table settings add column if not exists service_1_title text default 'Sales';
+alter table settings add column if not exists service_1_body text default 'New and quality electronics, priced fairly, with stock updated here as it comes in.';
+alter table settings add column if not exists service_2_title text default 'Repair & service';
+alter table settings add column if not exists service_2_body text default 'Diagnostics and repairs on the devices we sell and beyond — bring it in or message us the issue.';
+alter table settings add column if not exists service_3_title text default 'Support';
+alter table settings add column if not exists service_3_body text default 'Questions about a part, a price, or what fits your setup — reach out on WhatsApp any time.';
 
 alter table settings enable row level security;
 

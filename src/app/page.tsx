@@ -29,6 +29,7 @@ export default async function HomePage({
   })) as Product[];
   const featured = allProducts.filter((p) => p.featured);
   const rest = allProducts.filter((p) => !p.featured);
+  const s = (settings as Settings) ?? null;
 
   return (
     <>
@@ -54,14 +55,14 @@ export default async function HomePage({
       <section className="mx-auto max-w-6xl px-5 sm:px-8 pt-16 pb-10">
         <div className="bracket-frame border border-line rounded-lg bg-grid bg-[length:28px_28px] px-6 sm:px-10 py-14 sm:py-20 animate-fade-in-up">
           <p className="font-mono text-xs tracking-[0.3em] uppercase text-copper-bright mb-4">
-            Male&rsquo;, Maldives
+            {s?.hero_eyebrow || "Male\u2019, Maldives"}
           </p>
-          <h1 className="font-display text-4xl sm:text-6xl leading-[1.05] text-balance max-w-2xl">
-            Electronics, sold and serviced right.
+          <h1 className="font-display text-4xl sm:text-6xl leading-[1.05] text-balance max-w-2xl whitespace-pre-line">
+            {s?.hero_heading || "Electronics, sold and serviced right."}
           </h1>
-          <p className="font-body text-muted mt-5 max-w-md text-sm sm:text-base">
-            Devices, parts, and repairs from E Tronic. Reach out below for
-            stock, pricing, or a service booking.
+          <p className="font-body text-muted mt-5 max-w-md text-sm sm:text-base whitespace-pre-line">
+            {s?.hero_subtext ||
+              "Devices, parts, and repairs from E Tronic. Reach out below for stock, pricing, or a service booking."}
           </p>
         </div>
       </section>
@@ -71,16 +72,25 @@ export default async function HomePage({
         <SectionLabel>What we do</SectionLabel>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
           <ServiceCard
-            title="Sales"
-            body="New and quality electronics, priced fairly, with stock updated here as it comes in."
+            title={s?.service_1_title || "Sales"}
+            body={
+              s?.service_1_body ||
+              "New and quality electronics, priced fairly, with stock updated here as it comes in."
+            }
           />
           <ServiceCard
-            title="Repair & service"
-            body="Diagnostics and repairs on the devices we sell and beyond — bring it in or message us the issue."
+            title={s?.service_2_title || "Repair & service"}
+            body={
+              s?.service_2_body ||
+              "Diagnostics and repairs on the devices we sell and beyond — bring it in or message us the issue."
+            }
           />
           <ServiceCard
-            title="Support"
-            body="Questions about a part, a price, or what fits your setup — reach out on WhatsApp any time."
+            title={s?.service_3_title || "Support"}
+            body={
+              s?.service_3_body ||
+              "Questions about a part, a price, or what fits your setup — reach out on WhatsApp any time."
+            }
           />
         </div>
       </section>
@@ -117,7 +127,7 @@ export default async function HomePage({
         )}
       </section>
 
-      <Footer settings={(settings as Settings) ?? null} />
+      <Footer settings={s} />
       <CartDrawer />
     </>
   );

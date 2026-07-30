@@ -19,6 +19,15 @@ export type Settings = {
   business_name: string;
   registration_number: string | null;
   invoice_prepared_by: string | null;
+  hero_eyebrow: string | null;
+  hero_heading: string | null;
+  hero_subtext: string | null;
+  service_1_title: string | null;
+  service_1_body: string | null;
+  service_2_title: string | null;
+  service_2_body: string | null;
+  service_3_title: string | null;
+  service_3_body: string | null;
   phone: string | null;
   whatsapp: string | null;
   address: string | null;

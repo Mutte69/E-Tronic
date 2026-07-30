@@ -26,8 +26,8 @@ export default async function SettingsPage({
           </p>
         )}
 
-        <form action={updateSettings} className="space-y-8 max-w-lg">
-          <fieldset className="space-y-4">
+        <form action={updateSettings} className="space-y-8 max-w-3xl">
+          <fieldset className="space-y-4 max-w-lg">
             <legend className="font-display text-sm tracking-[0.2em] uppercase text-copper-bright mb-2">
               Contact
             </legend>
@@ -67,6 +67,86 @@ export default async function SettingsPage({
 
           <fieldset className="space-y-4">
             <legend className="font-display text-sm tracking-[0.2em] uppercase text-copper-bright mb-2">
+              Homepage content
+            </legend>
+            <Field
+              label="Location line (small text above the headline)"
+              name="hero_eyebrow"
+              defaultValue={settings?.hero_eyebrow ?? "Male', Maldives"}
+            />
+            <TextAreaField
+              label="Main headline"
+              name="hero_heading"
+              rows={2}
+              defaultValue={settings?.hero_heading ?? "Electronics, sold and serviced right."}
+            />
+            <TextAreaField
+              label="Subtext"
+              name="hero_subtext"
+              rows={3}
+              defaultValue={
+                settings?.hero_subtext ??
+                "Devices, parts, and repairs from E Tronic. Reach out below for stock, pricing, or a service booking."
+              }
+            />
+
+            <p className="font-body text-xs text-muted pt-2">
+              "What we do" section — three cards shown under the headline.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Field
+                  label="Card 1 title"
+                  name="service_1_title"
+                  defaultValue={settings?.service_1_title ?? "Sales"}
+                />
+                <TextAreaField
+                  label="Card 1 text"
+                  name="service_1_body"
+                  rows={3}
+                  defaultValue={
+                    settings?.service_1_body ??
+                    "New and quality electronics, priced fairly, with stock updated here as it comes in."
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Field
+                  label="Card 2 title"
+                  name="service_2_title"
+                  defaultValue={settings?.service_2_title ?? "Repair & service"}
+                />
+                <TextAreaField
+                  label="Card 2 text"
+                  name="service_2_body"
+                  rows={3}
+                  defaultValue={
+                    settings?.service_2_body ??
+                    "Diagnostics and repairs on the devices we sell and beyond — bring it in or message us the issue."
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Field
+                  label="Card 3 title"
+                  name="service_3_title"
+                  defaultValue={settings?.service_3_title ?? "Support"}
+                />
+                <TextAreaField
+                  label="Card 3 text"
+                  name="service_3_body"
+                  rows={3}
+                  defaultValue={
+                    settings?.service_3_body ??
+                    "Questions about a part, a price, or what fits your setup — reach out on WhatsApp any time."
+                  }
+                />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset className="space-y-4 max-w-lg">
+            <legend className="font-display text-sm tracking-[0.2em] uppercase text-copper-bright mb-2">
               Invoices
             </legend>
             <Field
@@ -76,7 +156,7 @@ export default async function SettingsPage({
             />
           </fieldset>
 
-          <fieldset className="space-y-4">
+          <fieldset className="space-y-4 max-w-lg">
             <legend className="font-display text-sm tracking-[0.2em] uppercase text-copper-bright mb-2">
               BML transfer
             </legend>
@@ -84,7 +164,7 @@ export default async function SettingsPage({
             <Field label="Account number" name="bml_account_number" defaultValue={settings?.bml_account_number ?? ""} mono />
           </fieldset>
 
-          <fieldset className="space-y-4">
+          <fieldset className="space-y-4 max-w-lg">
             <legend className="font-display text-sm tracking-[0.2em] uppercase text-copper-bright mb-2">
               MIB transfer
             </legend>
@@ -100,6 +180,33 @@ export default async function SettingsPage({
           </SubmitButton>
         </form>
       </main>
+    </div>
+  );
+}
+
+function TextAreaField({
+  label,
+  name,
+  defaultValue,
+  rows = 3,
+}: {
+  label: string;
+  name: string;
+  defaultValue?: string | null;
+  rows?: number;
+}) {
+  return (
+    <div>
+      <label className="block font-body text-xs text-muted mb-1" htmlFor={name}>
+        {label}
+      </label>
+      <textarea
+        id={name}
+        name={name}
+        rows={rows}
+        defaultValue={defaultValue ?? ""}
+        className="w-full rounded-md bg-surface-raised border border-line px-3 py-2 font-body text-sm text-paper focus:border-copper outline-none"
+      />
     </div>
   );
 }
