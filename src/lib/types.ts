@@ -59,9 +59,11 @@ export type Invoice = {
   id: string;
   invoice_no: number;
   order_id: string | null;
+  quotation_id: string | null;
   customer_name: string;
   customer_phone: string | null;
   customer_address: string | null;
+  customer_tin: string | null;
   items: InvoiceLineItem[];
   subtotal: number;
   discount_type: "none" | "percent" | "fixed";
@@ -70,4 +72,41 @@ export type Invoice = {
   status: "unpaid" | "paid";
   created_at: string;
   paid_at: string | null;
+};
+
+export type Quotation = {
+  id: string;
+  quotation_no: number;
+  customer_name: string;
+  customer_phone: string | null;
+  customer_address: string | null;
+  customer_tin: string | null;
+  items: InvoiceLineItem[];
+  subtotal: number;
+  discount_type: "none" | "percent" | "fixed";
+  discount_value: number;
+  total: number;
+  delivery_terms: string | null;
+  payment_terms: string | null;
+  status: "open" | "converted";
+  converted_invoice_id: string | null;
+  created_at: string;
+};
+
+export type DeliveryNoteItem = {
+  name: string;
+  qty: number;
+};
+
+export type DeliveryNote = {
+  id: string;
+  delivery_no: number;
+  invoice_id: string | null;
+  customer_name: string;
+  customer_phone: string | null;
+  customer_address: string | null;
+  items: DeliveryNoteItem[];
+  received_by: string | null;
+  notes: string | null;
+  created_at: string;
 };

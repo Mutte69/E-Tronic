@@ -16,10 +16,13 @@ required.
   - **Branded card generator** — pick a photo, fill in name + price,
     hit *Generate branded card* and it composites the E Tronic logo,
     name, and price onto the photo before it's posted
+  - **Quotations** — build a quote with customer details, delivery and
+    payment terms; one click converts it to an invoice
   - **Orders** — every WhatsApp cart checkout lands here first, so you
     can turn it into an invoice with one click
   - **Invoices** — itemized, printable, with a **PAID** stamp once
-    marked paid
+    marked paid; one click creates a delivery note once goods are handed over
+  - **Delivery notes** — item/quantity only (no prices), with signature lines
   - **Analytics** — today/this month's sales, profit (using your cost
     prices), last 7 days chart, order counts
 

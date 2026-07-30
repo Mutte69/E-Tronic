@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { createInvoice } from "@/app/admin/actions";
+import { createQuotation } from "@/app/admin/actions";
 import SubmitButton from "@/components/SubmitButton";
 import type { Product } from "@/lib/types";
 
@@ -21,7 +21,7 @@ const emptyLine = (): Line => ({
   product_id: null,
 });
 
-export default function NewInvoiceForm({ products }: { products: Product[] }) {
+export default function NewQuotationForm({ products }: { products: Product[] }) {
   const [lines, setLines] = useState<Line[]>([emptyLine()]);
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -103,7 +103,7 @@ export default function NewInvoiceForm({ products }: { products: Product[] }) {
   const total = Math.max(0, subtotal - discountAmount);
 
   return (
-    <form action={createInvoice} className="space-y-6 max-w-2xl">
+    <form action={createQuotation} className="space-y-6 max-w-2xl">
       <input type="hidden" name="items" value={itemsJson} />
 
       <fieldset className="space-y-4">
@@ -276,6 +276,28 @@ export default function NewInvoiceForm({ products }: { products: Product[] }) {
         </div>
       </fieldset>
 
+      <fieldset className="space-y-4">
+        <legend className="font-display text-sm tracking-[0.2em] uppercase text-copper-bright mb-2">
+          Terms <span className="text-muted normal-case tracking-normal">(optional)</span>
+        </legend>
+        <div>
+          <label className="block font-body text-xs text-muted mb-1">Delivery terms</label>
+          <input
+            name="delivery_terms"
+            placeholder="e.g. 5 days from date of confirmation"
+            className="w-full rounded-md bg-surface-raised border border-line px-3 py-2 font-body text-sm text-paper placeholder:text-muted/50 focus:border-copper outline-none"
+          />
+        </div>
+        <div>
+          <label className="block font-body text-xs text-muted mb-1">Payment terms</label>
+          <input
+            name="payment_terms"
+            placeholder="e.g. 50% advance, balance before delivery"
+            className="w-full rounded-md bg-surface-raised border border-line px-3 py-2 font-body text-sm text-paper placeholder:text-muted/50 focus:border-copper outline-none"
+          />
+        </div>
+      </fieldset>
+
       <div className="space-y-1 border-t border-line pt-4">
         <div className="flex items-center justify-between font-body text-sm">
           <span className="text-muted">Subtotal</span>
@@ -290,7 +312,7 @@ export default function NewInvoiceForm({ products }: { products: Product[] }) {
           </div>
         )}
         <div className="flex items-center justify-between font-body text-sm pt-1">
-          <span className="text-muted">Total due</span>
+          <span className="text-muted">Grand total</span>
           <span className="font-mono text-copper-bright text-base">
             MVR {total.toFixed(2)}
           </span>
@@ -301,7 +323,7 @@ export default function NewInvoiceForm({ products }: { products: Product[] }) {
         pendingText="Creating…"
         className="rounded-md bg-copper hover:bg-copper-bright transition-colors text-ink font-body text-sm font-medium px-5 py-2.5"
       >
-        Create invoice
+        Create quotation
       </SubmitButton>
     </form>
   );

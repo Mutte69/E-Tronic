@@ -71,54 +71,78 @@ export default function ProductCard({ product }: { product: Product }) {
         </div>
       </div>
 
-      {/* Quick view — expand + fade from the card */}
+      {/* Full detail view — expand + fade from the card */}
       <div
-        className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-300 ${
+        className={`fixed inset-0 z-50 flex items-center justify-center sm:p-6 transition-opacity duration-300 ${
           open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
       >
         <button
-          className="absolute inset-0 bg-black/75"
+          className="absolute inset-0 bg-black/80"
           aria-label="Close"
           tabIndex={open ? 0 : -1}
           onClick={() => setOpen(false)}
         />
         <div
-          className={`relative w-full max-w-md bg-surface border border-line rounded-lg overflow-hidden transition-all duration-300 ease-out ${
+          className={`relative w-full h-full sm:h-auto sm:max-h-[85vh] sm:max-w-3xl bg-surface sm:border sm:border-line sm:rounded-lg overflow-y-auto transition-all duration-300 ease-out ${
             open ? "opacity-100 scale-100" : "opacity-0 scale-95"
           }`}
         >
           <button
             onClick={() => setOpen(false)}
-            className="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-ink/70 text-paper font-mono text-xs flex items-center justify-center hover:bg-ink transition-colors"
+            className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-ink/70 text-paper font-mono text-sm flex items-center justify-center hover:bg-ink transition-colors"
             aria-label="Close"
           >
             ✕
           </button>
-          <div className="relative aspect-square bg-surface-raised">
-            {product.image_url ? (
-              <Image
-                src={product.image_url}
-                alt={product.name}
-                fill
-                sizes="(max-width: 640px) 100vw, 448px"
-                className="object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center font-mono text-xs text-muted">
-                no image
+
+          <div className="flex flex-col sm:flex-row">
+            <div className="relative w-full h-72 sm:h-auto sm:w-1/2 bg-surface-raised shrink-0">
+              {product.image_url ? (
+                <Image
+                  src={product.image_url}
+                  alt={product.name}
+                  fill
+                  sizes="(max-width: 640px) 100vw, 50vw"
+                  className="object-contain"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center font-mono text-xs text-muted">
+                  no image
+                </div>
+              )}
+              {product.featured && (
+                <span className="absolute top-4 left-4 font-mono text-[10px] tracking-widest uppercase bg-copper text-ink px-2 py-1 rounded-sm">
+                  Featured
+                </span>
+              )}
+            </div>
+
+            <div className="p-6 sm:p-8 sm:w-1/2 flex flex-col">
+              <h3 className="font-display text-2xl text-paper mb-2">{product.name}</h3>
+              {product.caption && (
+                <p className="font-body text-muted text-sm leading-relaxed mb-4">
+                  {product.caption}
+                </p>
+              )}
+              <p className="font-mono text-copper-bright text-2xl mb-2">
+                MVR {product.price.toFixed(2)}
+              </p>
+              {!inStock ? (
+                <p className="font-mono text-xs uppercase tracking-wide text-muted mb-4">
+                  Out of stock
+                </p>
+              ) : (
+                lowStock && (
+                  <p className="font-mono text-xs uppercase tracking-wide text-copper-bright mb-4">
+                    {lowStock}
+                  </p>
+                )
+              )}
+              <div className="mt-auto pt-4">
+                <AddToCartButton product={product} />
               </div>
-            )}
-          </div>
-          <div className="p-5">
-            <h3 className="font-display text-lg text-paper mb-1">{product.name}</h3>
-            {product.caption && (
-              <p className="font-body text-muted text-sm mb-3">{product.caption}</p>
-            )}
-            <p className="font-mono text-copper-bright text-base mb-3">
-              MVR {product.price.toFixed(2)}
-            </p>
-            <AddToCartButton product={product} />
+            </div>
           </div>
         </div>
       </div>

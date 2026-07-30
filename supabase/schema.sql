@@ -156,6 +156,8 @@ create table if not exists invoices (
 alter table invoices add column if not exists discount_type text not null default 'none' check (discount_type in ('none', 'percent', 'fixed'));
 alter table invoices add column if not exists discount_value numeric(10,2) not null default 0;
 alter table invoices add column if not exists total numeric(10,2) not null default 0;
+alter table invoices add column if not exists customer_tin text;
+alter table invoices add column if not exists quotation_id uuid;
 update invoices set total = subtotal where total = 0;
 
 alter table invoices enable row level security;
@@ -163,6 +165,68 @@ alter table invoices enable row level security;
 drop policy if exists "Authenticated can manage invoices" on invoices;
 create policy "Authenticated can manage invoices"
   on invoices for all
+  to authenticated
+  using (true)
+  with check (true);
+
+-- 6. QUOTATIONS TABLE
+create sequence if not exists quotation_no_seq start 1;
+
+create table if not exists quotations (
+  id uuid primary key default gen_random_uuid(),
+  quotation_no int not null default nextval('quotation_no_seq') unique,
+  customer_name text not null,
+  customer_phone text,
+  customer_address text,
+  customer_tin text,
+  items jsonb not null default '[]',
+  subtotal numeric(10,2) not null default 0,
+  discount_type text not null default 'none' check (discount_type in ('none', 'percent', 'fixed')),
+  discount_value numeric(10,2) not null default 0,
+  total numeric(10,2) not null default 0,
+  delivery_terms text,
+  payment_terms text,
+  status text not null default 'open' check (status in ('open', 'converted')),
+  converted_invoice_id uuid references invoices(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+
+alter table quotations enable row level security;
+
+drop policy if exists "Authenticated can manage quotations" on quotations;
+create policy "Authenticated can manage quotations"
+  on quotations for all
+  to authenticated
+  using (true)
+  with check (true);
+
+do $$ begin
+  alter table invoices add constraint invoices_quotation_id_fkey
+    foreign key (quotation_id) references quotations(id) on delete set null;
+exception when duplicate_object then null;
+end $$;
+
+-- 7. DELIVERY NOTES TABLE
+create sequence if not exists delivery_no_seq start 1;
+
+create table if not exists delivery_notes (
+  id uuid primary key default gen_random_uuid(),
+  delivery_no int not null default nextval('delivery_no_seq') unique,
+  invoice_id uuid references invoices(id) on delete set null,
+  customer_name text not null,
+  customer_phone text,
+  customer_address text,
+  items jsonb not null default '[]',
+  received_by text,
+  notes text,
+  created_at timestamptz not null default now()
+);
+
+alter table delivery_notes enable row level security;
+
+drop policy if exists "Authenticated can manage delivery notes" on delivery_notes;
+create policy "Authenticated can manage delivery notes"
+  on delivery_notes for all
   to authenticated
   using (true)
   with check (true);

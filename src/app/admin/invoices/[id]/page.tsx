@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import AdminNav from "@/components/AdminNav";
 import DownloadInvoiceButton from "@/components/DownloadInvoiceButton";
 import DeleteInvoiceButton from "@/components/DeleteInvoiceButton";
-import { toggleInvoicePaid } from "@/app/admin/actions";
+import { toggleInvoicePaid, createDeliveryNoteFromInvoice } from "@/app/admin/actions";
 import SubmitButton from "@/components/SubmitButton";
 import { normalizeInvoice } from "@/lib/normalize";
 import type { Invoice, Settings } from "@/lib/types";
@@ -30,6 +31,12 @@ export default async function InvoiceViewPage({
   const s = (settings as Settings) ?? null;
   const isPaid = inv.status === "paid";
   const hasBank = s?.bml_account_number || s?.mib_account_number;
+
+  const { data: existingNote } = await supabase
+    .from("delivery_notes")
+    .select("id")
+    .eq("invoice_id", inv.id)
+    .maybeSingle();
 
   return (
     <div className="min-h-screen">
@@ -103,6 +110,9 @@ export default async function InvoiceViewPage({
             )}
             {inv.customer_address && (
               <p className="font-body text-xs text-muted">{inv.customer_address}</p>
+            )}
+            {inv.customer_tin && (
+              <p className="font-mono text-xs text-muted">TIN: {inv.customer_tin}</p>
             )}
           </div>
 
@@ -210,6 +220,52 @@ export default async function InvoiceViewPage({
               For {s?.business_name || "E Tronic"}
             </p>
           </div>
+        </div>
+
+        <div className="mt-6 border border-line rounded-lg bg-surface p-6 print:hidden">
+          <h2 className="font-display text-sm tracking-[0.2em] uppercase text-copper-bright mb-3">
+            Delivery note
+          </h2>
+          {existingNote ? (
+            <Link
+              href={`/admin/delivery-notes/${existingNote.id}`}
+              className="font-body text-sm text-copper-bright hover:text-copper transition-colors"
+            >
+              View delivery note →
+            </Link>
+          ) : (
+            <form action={createDeliveryNoteFromInvoice.bind(null, inv.id)} className="space-y-3 max-w-sm">
+              <p className="font-body text-xs text-muted">
+                Creates a delivery note listing the items and quantities from
+                this invoice, without prices — for the customer to sign on
+                handover.
+              </p>
+              <div>
+                <label className="block font-body text-xs text-muted mb-1">
+                  Received by <span className="text-muted">(optional)</span>
+                </label>
+                <input
+                  name="received_by"
+                  className="w-full rounded-md bg-surface-raised border border-line px-3 py-2 font-body text-sm text-paper focus:border-copper outline-none"
+                />
+              </div>
+              <div>
+                <label className="block font-body text-xs text-muted mb-1">
+                  Notes <span className="text-muted">(optional)</span>
+                </label>
+                <input
+                  name="notes"
+                  className="w-full rounded-md bg-surface-raised border border-line px-3 py-2 font-body text-sm text-paper focus:border-copper outline-none"
+                />
+              </div>
+              <SubmitButton
+                pendingText="Creating…"
+                className="rounded-md bg-copper hover:bg-copper-bright transition-colors text-ink font-body text-sm font-medium px-4 py-2"
+              >
+                Create delivery note
+              </SubmitButton>
+            </form>
+          )}
         </div>
       </main>
     </div>

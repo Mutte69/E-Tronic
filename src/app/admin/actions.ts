@@ -275,6 +275,7 @@ export async function createInvoice(formData: FormData) {
       customer_name: String(formData.get("customer_name") ?? "").trim(),
       customer_phone: String(formData.get("customer_phone") ?? "").trim() || null,
       customer_address: String(formData.get("customer_address") ?? "").trim() || null,
+      customer_tin: String(formData.get("customer_tin") ?? "").trim() || null,
       items,
       subtotal,
       discount_type: validDiscountType,
@@ -339,6 +340,157 @@ export async function deleteInvoice(id: string) {
   revalidatePath("/admin/invoices");
   revalidatePath("/admin/analytics");
   redirect("/admin/invoices");
+}
+
+function computeDiscount(
+  subtotal: number,
+  discountType: string,
+  discountValue: number
+) {
+  const validType = ["none", "percent", "fixed"].includes(discountType)
+    ? discountType
+    : "none";
+  const amount =
+    validType === "percent"
+      ? (subtotal * discountValue) / 100
+      : validType === "fixed"
+      ? discountValue
+      : 0;
+  return { validType, total: Math.max(0, subtotal - amount) };
+}
+
+export async function createQuotation(formData: FormData) {
+  const supabase = createClient();
+
+  const itemsRaw = String(formData.get("items") ?? "[]");
+  let items: { product_id: string | null; name: string; price: number; cost_price: number | null; qty: number }[] = [];
+  try {
+    items = JSON.parse(itemsRaw);
+  } catch {
+    items = [];
+  }
+
+  const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+  const discountType = String(formData.get("discount_type") ?? "none");
+  const discountValue = parseFloat(String(formData.get("discount_value") ?? "0")) || 0;
+  const { validType, total } = computeDiscount(subtotal, discountType, discountValue);
+
+  const { data: quotation, error } = await supabase
+    .from("quotations")
+    .insert({
+      customer_name: String(formData.get("customer_name") ?? "").trim(),
+      customer_phone: String(formData.get("customer_phone") ?? "").trim() || null,
+      customer_address: String(formData.get("customer_address") ?? "").trim() || null,
+      customer_tin: String(formData.get("customer_tin") ?? "").trim() || null,
+      items,
+      subtotal,
+      discount_type: validType,
+      discount_value: validType === "none" ? 0 : discountValue,
+      total,
+      delivery_terms: String(formData.get("delivery_terms") ?? "").trim() || null,
+      payment_terms: String(formData.get("payment_terms") ?? "").trim() || null,
+    })
+    .select()
+    .single();
+
+  if (error || !quotation) throw new Error(error?.message ?? "Could not create quotation");
+
+  revalidatePath("/admin/quotations");
+  redirect(`/admin/quotations/${quotation.id}`);
+}
+
+export async function deleteQuotation(id: string) {
+  const supabase = createClient();
+  const { error } = await supabase.from("quotations").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/admin/quotations");
+  redirect("/admin/quotations");
+}
+
+export async function convertQuotationToInvoice(quotationId: string) {
+  const supabase = createClient();
+
+  const { data: quotation, error: qError } = await supabase
+    .from("quotations")
+    .select("*")
+    .eq("id", quotationId)
+    .single();
+
+  if (qError || !quotation) throw new Error(qError?.message ?? "Quotation not found");
+
+  const { data: invoice, error } = await supabase
+    .from("invoices")
+    .insert({
+      quotation_id: quotation.id,
+      customer_name: quotation.customer_name,
+      customer_phone: quotation.customer_phone,
+      customer_address: quotation.customer_address,
+      customer_tin: quotation.customer_tin,
+      items: quotation.items,
+      subtotal: quotation.subtotal,
+      discount_type: quotation.discount_type,
+      discount_value: quotation.discount_value,
+      total: quotation.total,
+    })
+    .select()
+    .single();
+
+  if (error || !invoice) throw new Error(error?.message ?? "Could not create invoice");
+
+  await supabase
+    .from("quotations")
+    .update({ status: "converted", converted_invoice_id: invoice.id })
+    .eq("id", quotationId);
+
+  revalidatePath("/admin/quotations");
+  revalidatePath("/admin/invoices");
+  redirect(`/admin/invoices/${invoice.id}`);
+}
+
+export async function createDeliveryNoteFromInvoice(invoiceId: string, formData: FormData) {
+  const supabase = createClient();
+
+  const { data: invoice, error: invError } = await supabase
+    .from("invoices")
+    .select("*")
+    .eq("id", invoiceId)
+    .single();
+
+  if (invError || !invoice) throw new Error(invError?.message ?? "Invoice not found");
+
+  const items = (invoice.items as { name: string; qty: number }[]).map((i) => ({
+    name: i.name,
+    qty: i.qty,
+  }));
+
+  const { data: note, error } = await supabase
+    .from("delivery_notes")
+    .insert({
+      invoice_id: invoice.id,
+      customer_name: invoice.customer_name,
+      customer_phone: invoice.customer_phone,
+      customer_address: invoice.customer_address,
+      items,
+      received_by: String(formData.get("received_by") ?? "").trim() || null,
+      notes: String(formData.get("notes") ?? "").trim() || null,
+    })
+    .select()
+    .single();
+
+  if (error || !note) throw new Error(error?.message ?? "Could not create delivery note");
+
+  revalidatePath("/admin/delivery-notes");
+  redirect(`/admin/delivery-notes/${note.id}`);
+}
+
+export async function deleteDeliveryNote(id: string) {
+  const supabase = createClient();
+  const { error } = await supabase.from("delivery_notes").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/admin/delivery-notes");
+  redirect("/admin/delivery-notes");
 }
 
 export async function updateSettings(formData: FormData) {

@@ -5,7 +5,9 @@ export default function AdminNav({ active }: { active: string }) {
   const links = [
     { href: "/admin", label: "Products" },
     { href: "/admin/orders", label: "Orders" },
+    { href: "/admin/quotations", label: "Quotations" },
     { href: "/admin/invoices", label: "Invoices" },
+    { href: "/admin/delivery-notes", label: "Delivery" },
     { href: "/admin/analytics", label: "Analytics" },
     { href: "/admin/settings", label: "Settings" },
   ];
