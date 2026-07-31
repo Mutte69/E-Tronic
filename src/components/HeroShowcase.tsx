@@ -62,19 +62,21 @@ export default function HeroShowcase({ products }: { products: Product[] }) {
         ))}
       </button>
 
-      <span className="pointer-events-none absolute top-4 left-4 font-mono text-[10px] tracking-[0.3em] uppercase bg-ink/70 text-copper-bright px-2 py-1 rounded-sm">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-ink/70 to-transparent" />
+
+      <span className="pointer-events-none absolute top-4 right-4 font-mono text-[10px] tracking-[0.3em] uppercase bg-ink/60 backdrop-blur-sm text-copper-bright px-2.5 py-1 rounded-sm border border-copper/30">
         Featured
       </span>
 
       {products.length > 1 && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+        <div className="absolute bottom-3 right-4 flex items-center gap-1.5">
           {products.map((p, i) => (
             <button
               key={p.id}
               onClick={() => setIndex(i)}
               aria-label={`Show ${p.name}`}
-              className={`h-1.5 rounded-full transition-all ${
-                i === index ? "w-6 bg-copper" : "w-1.5 bg-paper/50"
+              className={`h-1 rounded-full transition-all ${
+                i === index ? "w-5 bg-copper-bright" : "w-1 bg-paper/40"
               }`}
             />
           ))}

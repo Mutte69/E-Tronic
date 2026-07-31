@@ -56,14 +56,18 @@ export default async function HomePage({
       <section className="mx-auto max-w-6xl px-5 sm:px-8 pt-16 pb-10">
         <div className="bracket-frame border border-line rounded-lg overflow-hidden animate-fade-in-up">
           <div className={`grid md:min-h-[440px] ${featured.length > 0 ? "md:grid-cols-[1.1fr_0.9fr]" : ""}`}>
-            <div className="bg-grid bg-[length:28px_28px] px-6 sm:px-8 py-10 sm:py-12 flex flex-col justify-center">
-              <p className="font-mono text-xs tracking-[0.3em] uppercase text-copper-bright mb-4">
+            <div className="relative overflow-hidden px-6 sm:px-8 py-10 sm:py-12 flex flex-col justify-center">
+              <div
+                className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 rounded-full opacity-20 blur-3xl"
+                style={{ background: "radial-gradient(circle, #C6793D, transparent 70%)" }}
+              />
+              <p className="relative font-mono text-xs tracking-[0.3em] uppercase text-copper-bright mb-4">
                 {s?.hero_eyebrow || "Male\u2019, Maldives"}
               </p>
-              <h1 className="font-display text-3xl sm:text-5xl leading-[1.05] text-balance whitespace-pre-line">
+              <h1 className="relative font-display text-3xl sm:text-5xl leading-[1.05] text-balance whitespace-pre-line">
                 {s?.hero_heading || "Electronics, sold and serviced right."}
               </h1>
-              <p className="font-body text-muted mt-5 max-w-md text-sm sm:text-base whitespace-pre-line">
+              <p className="relative font-body text-muted mt-5 max-w-md text-sm sm:text-base whitespace-pre-line">
                 {s?.hero_subtext ||
                   "Devices, parts, and repairs from E Tronic. Reach out below for stock, pricing, or a service booking."}
               </p>
