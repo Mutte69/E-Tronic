@@ -28,7 +28,7 @@ export default function HeroShowcase({ products }: { products: Product[] }) {
 
   return (
     <div
-      className="relative w-full h-full min-h-[260px] md:min-h-0"
+      className="relative w-full h-full min-h-[260px] md:min-h-0 bg-ink"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -50,7 +50,7 @@ export default function HeroShowcase({ products }: { products: Product[] }) {
                 alt={p.name}
                 fill
                 sizes="(max-width: 768px) 100vw, 45vw"
-                className="object-cover"
+                className="object-contain"
                 priority={i === 0}
               />
             ) : (
@@ -62,7 +62,7 @@ export default function HeroShowcase({ products }: { products: Product[] }) {
         ))}
       </button>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-ink/70 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-ink/60 to-transparent" />
 
       <span className="pointer-events-none absolute top-4 right-4 font-mono text-[10px] tracking-[0.3em] uppercase bg-ink/60 backdrop-blur-sm text-copper-bright px-2.5 py-1 rounded-sm border border-copper/30">
         Featured
