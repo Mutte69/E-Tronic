@@ -54,21 +54,27 @@ export default async function HomePage({
 
       {/* Hero */}
       <section className="mx-auto max-w-6xl px-5 sm:px-8 pt-16 pb-10">
-        <div className={`grid gap-6 ${featured.length > 0 ? "md:grid-cols-[1.1fr_0.9fr]" : ""}`}>
-          <div className="border border-line rounded-lg bg-grid bg-[length:28px_28px] px-6 sm:px-8 py-10 sm:py-12 animate-fade-in-up flex flex-col justify-center">
-            <p className="font-mono text-xs tracking-[0.3em] uppercase text-copper-bright mb-4">
-              {s?.hero_eyebrow || "Male\u2019, Maldives"}
-            </p>
-            <h1 className="font-display text-3xl sm:text-5xl leading-[1.05] text-balance whitespace-pre-line">
-              {s?.hero_heading || "Electronics, sold and serviced right."}
-            </h1>
-            <p className="font-body text-muted mt-5 max-w-md text-sm sm:text-base whitespace-pre-line">
-              {s?.hero_subtext ||
-                "Devices, parts, and repairs from E Tronic. Reach out below for stock, pricing, or a service booking."}
-            </p>
-          </div>
+        <div className="bracket-frame border border-line rounded-lg overflow-hidden animate-fade-in-up">
+          <div className={`grid md:min-h-[440px] ${featured.length > 0 ? "md:grid-cols-[1.1fr_0.9fr]" : ""}`}>
+            <div className="bg-grid bg-[length:28px_28px] px-6 sm:px-8 py-10 sm:py-12 flex flex-col justify-center">
+              <p className="font-mono text-xs tracking-[0.3em] uppercase text-copper-bright mb-4">
+                {s?.hero_eyebrow || "Male\u2019, Maldives"}
+              </p>
+              <h1 className="font-display text-3xl sm:text-5xl leading-[1.05] text-balance whitespace-pre-line">
+                {s?.hero_heading || "Electronics, sold and serviced right."}
+              </h1>
+              <p className="font-body text-muted mt-5 max-w-md text-sm sm:text-base whitespace-pre-line">
+                {s?.hero_subtext ||
+                  "Devices, parts, and repairs from E Tronic. Reach out below for stock, pricing, or a service booking."}
+              </p>
+            </div>
 
-          {featured.length > 0 && <HeroShowcase products={featured} />}
+            {featured.length > 0 && (
+              <div className="border-t md:border-t-0 md:border-l border-line">
+                <HeroShowcase products={featured} />
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
