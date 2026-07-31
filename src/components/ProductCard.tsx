@@ -23,7 +23,7 @@ export default function ProductCard({ product }: { product: Product }) {
         onClick={() => setOpen(true)}
       >
         {product.featured && (
-          <span className="absolute top-3 left-3 z-10 font-mono text-[10px] tracking-widest uppercase bg-copper text-ink px-2 py-1 rounded-sm">
+          <span className="absolute top-3 right-3 z-10 font-mono text-[10px] tracking-widest uppercase bg-copper text-ink px-2 py-1 rounded-sm">
             Featured
           </span>
         )}

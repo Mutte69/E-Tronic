@@ -71,7 +71,7 @@ export default function ProductDetailOverlay({
             </div>
           )}
           {product.featured && (
-            <span className="absolute top-4 left-4 font-mono text-[10px] tracking-widest uppercase bg-copper text-ink px-2 py-1 rounded-sm">
+            <span className="absolute bottom-4 left-4 font-mono text-[10px] tracking-widest uppercase bg-copper text-ink px-2 py-1 rounded-sm">
               Featured
             </span>
           )}
