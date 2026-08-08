@@ -75,6 +75,15 @@ export async function downloadQuotationPdf(quotation: Quotation, settings: Setti
     margin + 42,
     { align: "right" }
   );
+  if (quotation.valid_until) {
+    doc.setTextColor(...COPPER);
+    doc.text(
+      `Valid until ${new Date(quotation.valid_until).toLocaleDateString()}`,
+      pageWidth - margin,
+      margin + 56,
+      { align: "right" }
+    );
+  }
 
   y = Math.max(y, margin + 90);
   y += 14;

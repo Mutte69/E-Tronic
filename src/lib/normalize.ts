@@ -29,6 +29,8 @@ export function normalizeQuotation(raw: Quotation): Quotation {
     customer_tin: raw.customer_tin ?? null,
     delivery_terms: raw.delivery_terms ?? null,
     payment_terms: raw.payment_terms ?? null,
+    valid_until: raw.valid_until ?? null,
+    created_by: raw.created_by ?? "staff",
     status: raw.status ?? "open",
   };
 }

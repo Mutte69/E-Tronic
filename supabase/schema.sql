@@ -204,10 +204,15 @@ create table if not exists quotations (
   total numeric(10,2) not null default 0,
   delivery_terms text,
   payment_terms text,
+  valid_until timestamptz,
+  created_by text not null default 'staff' check (created_by in ('staff', 'customer')),
   status text not null default 'open' check (status in ('open', 'converted')),
   converted_invoice_id uuid references invoices(id) on delete set null,
   created_at timestamptz not null default now()
 );
+
+alter table quotations add column if not exists valid_until timestamptz;
+alter table quotations add column if not exists created_by text not null default 'staff' check (created_by in ('staff', 'customer'));
 
 alter table quotations enable row level security;
 
@@ -217,6 +222,42 @@ create policy "Authenticated can manage quotations"
   to authenticated
   using (true)
   with check (true);
+
+drop policy if exists "Public can create quotations" on quotations;
+
+-- Customers create their own quotations through this function only (not a
+-- direct table policy) so pricing/discount/valid-until are always set
+-- server-side, and a customer can never read other people's quotations —
+-- the function returns just the row it created.
+create or replace function public.create_customer_quotation(
+  p_customer_name text,
+  p_customer_phone text,
+  p_customer_address text,
+  p_items jsonb,
+  p_subtotal numeric
+) returns setof quotations
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_id uuid;
+begin
+  insert into quotations (
+    customer_name, customer_phone, customer_address, items,
+    subtotal, discount_type, discount_value, total,
+    valid_until, created_by
+  ) values (
+    p_customer_name, p_customer_phone, p_customer_address, p_items,
+    p_subtotal, 'none', 0, p_subtotal,
+    now() + interval '7 days', 'customer'
+  ) returning quotations.id into v_id;
+
+  return query select * from quotations where quotations.id = v_id;
+end;
+$$;
+
+grant execute on function public.create_customer_quotation to anon, authenticated;
 
 do $$ begin
   alter table invoices add constraint invoices_quotation_id_fkey

@@ -82,11 +82,23 @@ export default async function QuotationViewPage({
               <p className="font-mono text-xs text-muted">
                 {new Date(q.created_at).toLocaleDateString()}
               </p>
-              {isConverted && (
-                <span className="inline-block mt-1 font-mono text-[10px] uppercase tracking-wide border border-copper text-copper-bright px-2 py-0.5 rounded-sm">
-                  Converted
-                </span>
+              {q.valid_until && (
+                <p className="font-mono text-xs text-copper-bright">
+                  Valid until {new Date(q.valid_until).toLocaleDateString()}
+                </p>
               )}
+              <div className="flex items-center gap-1.5 justify-end mt-1 flex-wrap">
+                {q.created_by === "customer" && (
+                  <span className="inline-block font-mono text-[10px] uppercase tracking-wide border border-line text-muted px-2 py-0.5 rounded-sm">
+                    From website
+                  </span>
+                )}
+                {isConverted && (
+                  <span className="inline-block font-mono text-[10px] uppercase tracking-wide border border-copper text-copper-bright px-2 py-0.5 rounded-sm">
+                    Converted
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 

@@ -143,7 +143,7 @@ export default async function HomePage({
       </section>
 
       <Footer settings={s} />
-      <CartDrawer />
+      <CartDrawer settings={s} />
     </>
   );
 }

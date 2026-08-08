@@ -97,6 +97,8 @@ export type Quotation = {
   total: number;
   delivery_terms: string | null;
   payment_terms: string | null;
+  valid_until: string | null;
+  created_by: "staff" | "customer";
   status: "open" | "converted";
   converted_invoice_id: string | null;
   created_at: string;

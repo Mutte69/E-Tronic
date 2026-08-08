@@ -1,15 +1,55 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useCart } from "@/lib/cart-context";
-import { createOrder } from "@/app/actions";
+import { createOrder, createPublicQuotation } from "@/app/actions";
+import { downloadQuotationPdf } from "@/lib/quotation-pdf";
 import SubmitButton from "@/components/SubmitButton";
+import type { Settings } from "@/lib/types";
 
-export default function CartDrawer() {
+export default function CartDrawer({ settings }: { settings: Settings | null }) {
   const { items, removeItem, setQty, subtotal, count, clear } = useCart();
   const [open, setOpen] = useState(false);
   const [checkingOut, setCheckingOut] = useState(false);
   const [renderedAt, setRenderedAt] = useState(0);
+  const [quoting, setQuoting] = useState(false);
+  const [quoteError, setQuoteError] = useState<string | null>(null);
+  const [quoteDone, setQuoteDone] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  async function handleGetQuotation() {
+    if (!formRef.current) return;
+    const fd = new FormData(formRef.current);
+    setQuoteError(null);
+    setQuoting(true);
+    try {
+      const result = await createPublicQuotation({
+        items,
+        customerName: String(fd.get("customer_name") ?? ""),
+        customerPhone: String(fd.get("customer_phone") ?? ""),
+        customerAddress: String(fd.get("customer_address") ?? ""),
+        formRenderedAt: renderedAt,
+        honeypot: String(fd.get("website") ?? ""),
+      });
+
+      if (!result.ok) {
+        setQuoteError(result.error);
+        return;
+      }
+
+      await downloadQuotationPdf(result.quotation, settings);
+      const validUntil = result.quotation.valid_until
+        ? new Date(result.quotation.valid_until).toLocaleDateString()
+        : null;
+      setQuoteDone(validUntil);
+      clear();
+      setCheckingOut(false);
+    } catch {
+      setQuoteError("Something went wrong creating your quotation. Please try again.");
+    } finally {
+      setQuoting(false);
+    }
+  }
 
   return (
     <>
@@ -52,7 +92,22 @@ export default function CartDrawer() {
               </button>
             </div>
 
-            {items.length === 0 ? (
+            {quoteDone ? (
+              <div className="border border-copper/40 rounded-md p-4 mb-4">
+                <p className="font-body text-sm text-paper mb-1">
+                  Quotation downloaded.
+                </p>
+                <p className="font-body text-xs text-muted">
+                  Valid until {quoteDone}. Check your downloads for the PDF.
+                </p>
+                <button
+                  onClick={() => setQuoteDone(null)}
+                  className="mt-3 font-mono text-xs text-copper-bright hover:text-copper transition-colors"
+                >
+                  Start a new cart
+                </button>
+              </div>
+            ) : items.length === 0 ? (
               <p className="font-body text-sm text-muted">Your cart is empty.</p>
             ) : (
               <>
@@ -112,14 +167,10 @@ export default function CartDrawer() {
                     }}
                     className="w-full rounded-md bg-copper hover:bg-copper-bright transition-colors text-ink font-body text-sm font-medium py-2.5"
                   >
-                    Order via WhatsApp
+                    Checkout
                   </button>
                 ) : (
-                  <form
-                    action={createOrder}
-                    onSubmit={() => clear()}
-                    className="space-y-3"
-                  >
+                  <form ref={formRef} action={createOrder} onSubmit={() => clear()} className="space-y-3">
                     <input type="hidden" name="items" value={JSON.stringify(items)} />
                     <input type="hidden" name="form_rendered_at" value={renderedAt} />
                     {/* honeypot — real customers never see or fill this */}
@@ -164,15 +215,36 @@ export default function CartDrawer() {
                         className="w-full rounded-md bg-surface-raised border border-line px-3 py-2 font-body text-sm text-paper focus:border-copper outline-none"
                       />
                     </div>
+
                     <SubmitButton
                       pendingText="Sending…"
                       className="w-full justify-center rounded-md bg-copper hover:bg-copper-bright transition-colors text-ink font-body text-sm font-medium py-2.5"
                     >
                       Send order to WhatsApp
                     </SubmitButton>
+
+                    <div className="flex items-center gap-2">
+                      <span className="flex-1 h-px bg-line" />
+                      <span className="font-mono text-[10px] text-muted uppercase">or</span>
+                      <span className="flex-1 h-px bg-line" />
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleGetQuotation}
+                      disabled={quoting}
+                      className="w-full rounded-md border border-copper/60 text-copper-bright hover:bg-copper hover:text-ink transition-colors font-body text-sm font-medium py-2.5 disabled:opacity-50"
+                    >
+                      {quoting ? "Preparing…" : "Get a quotation (PDF)"}
+                    </button>
+
+                    {quoteError && (
+                      <p className="font-body text-xs text-copper-bright">{quoteError}</p>
+                    )}
+
                     <p className="font-body text-xs text-muted">
-                      You&rsquo;ll be taken to WhatsApp with your order filled
-                      in — just hit send.
+                      WhatsApp sends your order straight to us. A quotation
+                      downloads a priced PDF you can keep — valid for 7 days.
                     </p>
                   </form>
                 )}

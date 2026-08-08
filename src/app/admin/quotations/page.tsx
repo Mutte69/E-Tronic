@@ -40,7 +40,12 @@ export default async function QuotationsPage() {
                 className="flex items-center justify-between border border-line rounded-lg bg-surface p-4 hover:border-copper/50 transition-colors"
               >
                 <div>
-                  <p className="font-mono text-xs text-muted">Quote-{q.quotation_no}</p>
+                  <p className="font-mono text-xs text-muted">
+                    Quote-{q.quotation_no}
+                    {q.created_by === "customer" && (
+                      <span className="ml-2 text-copper-bright">from website</span>
+                    )}
+                  </p>
                   <p className="font-body text-sm text-paper">{q.customer_name}</p>
                 </div>
                 <div className="flex items-center gap-4">
