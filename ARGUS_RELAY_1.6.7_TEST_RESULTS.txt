@@ -1,0 +1,27 @@
+ARGUS Relay 1.6.7 — MMS Forecast Parser Hardening
+Test date: 2026-08-09
+
+PASS: npm run check
+PASS: npm test
+PASS: atlas-bridge tests
+PASS: source-registry tests
+PASS: server-collector tests
+PASS: source-pack tests (40 sources)
+PASS: web-collector hardening tests
+PASS: cap-collector tests
+PASS: met-weather-collector tests
+
+New 1.6.7 regression coverage:
+- duplicate/early General Forecast + Marine Forecast tab labels do not hide later contentful sections
+- General Forecast fields remain populated from the actual content section
+- Marine Forecast fields remain populated
+- station outlook cards remain mapped to Tomorrow / Next 48 hrs / Next 72 hrs
+- collapsed station card text such as "30°C Thundershowers" is parsed
+- source pack remains 40 sources
+- automatic server collectors remain disabled by default
+
+Production verification still required:
+- deploy 1.6.7 to Railway
+- keep ARGUS_SERVER_COLLECTORS_ENABLED=false
+- re-run mv-met-routine-forecast dry-run
+- confirm General Forecast and station outlook extraction against real MMS response

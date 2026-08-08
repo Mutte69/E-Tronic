@@ -1,0 +1,4 @@
+name,entity_id,platform,url,collector,source_type,region,country,languages,priority,reliability,enabled,notification_title_match,tags,notes
+Maldives Police Service,mv-police,web,https://www.police.gov.mv/,web,public_safety,MV,MV,dv|en,P0,official,true,,official|emergency,
+Maldives Police Service,mv-police,x,https://x.com/PoliceMv,x,public_safety,MV,MV,dv|en,P0,official,true,,official|emergency,
+Maldives Meteorological Service,mv-met,web,https://meteorology.gov.mv/,web,weather,MV,MV,dv|en,P0,official,true,,official|weather,

@@ -1,0 +1,19 @@
+ARGUS Relay 1.6.3 Atlas Wire Bridge — test results
+
+PASS npm run check
+PASS atlas-bridge tests
+PASS source-registry tests
+PASS server-collector tests
+PASS source-pack tests (37 sources)
+PASS web-collector hardening tests
+
+Atlas bridge assertions:
+- raw capture converted to Atlas snake_case contract
+- Thaana language detection -> dv
+- source/headline/body/link preserved
+- urgent_weather -> breaking priority
+- sourceRegion is NOT treated as story region
+- explicit storyRegion is preserved
+- retry ladder 15s / 60s / 5m / 15m / 1h
+
+Note: clean npm install is unavailable in the OpenAI execution environment because its internal package mirror returns 404 for express. Railway remains the dependency-backed runtime verification.

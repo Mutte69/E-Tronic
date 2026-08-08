@@ -1,0 +1,349 @@
+{
+  "pack": "world-core-v1",
+  "description": "ARGUS World Signal v1. Curated global detection sources. All automatic collection is disabled until Railway dry-runs pass.",
+  "sources": [
+    {
+      "id": "world-bbc-world-rss",
+      "entityId": "bbc-news",
+      "name": "BBC News — World",
+      "platform": "rss",
+      "url": "https://feeds.bbci.co.uk/news/world/rss.xml",
+      "collector": "rss",
+      "sourceType": "general_news",
+      "region": "WORLD",
+      "country": "GB",
+      "languages": [
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "established",
+      "tags": [
+        "world-signal",
+        "global-media",
+        "corroboration-required",
+        "world-general"
+      ],
+      "collectorConfig": {
+        "mode": "rss",
+        "autoCollect": false,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 120,
+        "maxItemsPerPoll": 15,
+        "maxAgeHours": 18,
+        "minArticleBodyLength": 120,
+        "minArticleWords": 15,
+        "worldSignalEnabled": true,
+        "worldSignalCandidateFloor": 25,
+        "worldSignalWatchScore": 50,
+        "worldSignalPublishScore": 70,
+        "worldSignalCorroborationHours": 12
+      },
+      "notes": "Broad global detection. Ordinary media reports generally require corroboration before passing the World Impact Gate."
+    },
+    {
+      "id": "world-bbc-business-rss",
+      "entityId": "bbc-news",
+      "name": "BBC News — Business",
+      "platform": "rss",
+      "url": "https://feeds.bbci.co.uk/news/business/rss.xml",
+      "collector": "rss",
+      "sourceType": "business",
+      "region": "WORLD",
+      "country": "GB",
+      "languages": [
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "established",
+      "tags": [
+        "world-signal",
+        "global-media",
+        "corroboration-required",
+        "business",
+        "economy"
+      ],
+      "collectorConfig": {
+        "mode": "rss",
+        "autoCollect": false,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 180,
+        "maxItemsPerPoll": 12,
+        "maxAgeHours": 24,
+        "worldSignalEnabled": true,
+        "worldSignalCandidateFloor": 25,
+        "worldSignalWatchScore": 50,
+        "worldSignalPublishScore": 70,
+        "worldSignalCorroborationHours": 12
+      }
+    },
+    {
+      "id": "world-bbc-technology-rss",
+      "entityId": "bbc-news",
+      "name": "BBC News — Technology",
+      "platform": "rss",
+      "url": "https://feeds.bbci.co.uk/news/technology/rss.xml",
+      "collector": "rss",
+      "sourceType": "technology",
+      "region": "WORLD",
+      "country": "GB",
+      "languages": [
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "established",
+      "tags": [
+        "world-signal",
+        "global-media",
+        "corroboration-required",
+        "technology",
+        "ai",
+        "cybersecurity"
+      ],
+      "collectorConfig": {
+        "mode": "rss",
+        "autoCollect": false,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 240,
+        "maxItemsPerPoll": 12,
+        "maxAgeHours": 24,
+        "worldSignalEnabled": true,
+        "worldSignalCandidateFloor": 25,
+        "worldSignalWatchScore": 50,
+        "worldSignalPublishScore": 70,
+        "worldSignalCorroborationHours": 12
+      }
+    },
+    {
+      "id": "world-aljazeera-all-rss",
+      "entityId": "al-jazeera",
+      "name": "Al Jazeera English",
+      "platform": "rss",
+      "url": "https://www.aljazeera.com/xml/rss/all.xml",
+      "collector": "rss",
+      "sourceType": "general_news",
+      "region": "WORLD",
+      "country": "QA",
+      "languages": [
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "established",
+      "tags": [
+        "world-signal",
+        "global-media",
+        "corroboration-required",
+        "world-general",
+        "middle-east"
+      ],
+      "collectorConfig": {
+        "mode": "rss",
+        "autoCollect": false,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 120,
+        "maxItemsPerPoll": 18,
+        "maxAgeHours": 18,
+        "worldSignalEnabled": true,
+        "worldSignalCandidateFloor": 25,
+        "worldSignalWatchScore": 50,
+        "worldSignalPublishScore": 70,
+        "worldSignalCorroborationHours": 12
+      },
+      "notes": "Global South and Middle East detection; sports/opinion/features are suppressed by the World Impact Gate."
+    },
+    {
+      "id": "world-un-news-rss",
+      "entityId": "united-nations",
+      "name": "United Nations News",
+      "platform": "rss",
+      "url": "https://news.un.org/feed/subscribe/en/news/all/rss.xml",
+      "collector": "rss",
+      "sourceType": "international",
+      "region": "WORLD",
+      "country": "",
+      "languages": [
+        "en"
+      ],
+      "priority": "P0",
+      "reliability": "official",
+      "tags": [
+        "world-signal",
+        "world-authoritative",
+        "no-corroboration-required",
+        "un",
+        "diplomacy",
+        "conflict"
+      ],
+      "collectorConfig": {
+        "mode": "rss",
+        "autoCollect": false,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 180,
+        "maxItemsPerPoll": 12,
+        "maxAgeHours": 24,
+        "worldSignalEnabled": true,
+        "worldSignalCandidateFloor": 20,
+        "worldSignalWatchScore": 50,
+        "worldSignalPublishScore": 70,
+        "worldSignalCorroborationHours": 12
+      }
+    },
+    {
+      "id": "world-gdacs-rss",
+      "entityId": "gdacs",
+      "name": "GDACS — Global Disaster Alerts",
+      "platform": "rss",
+      "url": "https://www.gdacs.org/xml/rss.xml",
+      "collector": "rss",
+      "sourceType": "emergency",
+      "region": "WORLD",
+      "country": "",
+      "languages": [
+        "en"
+      ],
+      "priority": "P0",
+      "reliability": "official",
+      "tags": [
+        "world-signal",
+        "world-authoritative-high-signal",
+        "no-corroboration-required",
+        "disaster-signal",
+        "gdacs",
+        "emergency"
+      ],
+      "collectorConfig": {
+        "mode": "rss",
+        "autoCollect": false,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 360,
+        "maxItemsPerPoll": 15,
+        "maxAgeHours": 24,
+        "worldSignalEnabled": true,
+        "worldSignalCandidateFloor": 20,
+        "worldSignalWatchScore": 50,
+        "worldSignalPublishScore": 70,
+        "worldSignalCorroborationHours": 12
+      }
+    },
+    {
+      "id": "world-usgs-significant-earthquakes",
+      "entityId": "usgs-earthquake-hazards",
+      "name": "USGS — Significant Earthquakes",
+      "platform": "api",
+      "url": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_day.geojson",
+      "collector": "rss",
+      "sourceType": "emergency",
+      "region": "WORLD",
+      "country": "US",
+      "languages": [
+        "en"
+      ],
+      "priority": "P0",
+      "reliability": "official",
+      "tags": [
+        "world-signal",
+        "world-authoritative-high-signal",
+        "no-corroboration-required",
+        "earthquake-signal",
+        "earthquake",
+        "emergency"
+      ],
+      "collectorConfig": {
+        "mode": "usgs_geojson",
+        "autoCollect": false,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 120,
+        "maxItemsPerPoll": 10,
+        "maxAgeHours": 24,
+        "worldSignalEnabled": true,
+        "worldSignalCandidateFloor": 45,
+        "worldSignalWatchScore": 50,
+        "worldSignalPublishScore": 70,
+        "worldSignalCorroborationHours": 12
+      },
+      "notes": "Structured USGS GeoJSON. World gate uses magnitude, PAGER alert, tsunami flag, MMI, felt reports and USGS significance; remote low-impact events do not auto-pass."
+    },
+    {
+      "id": "world-who-disease-outbreak-news",
+      "entityId": "world-health-organization",
+      "name": "WHO — Disease Outbreak News",
+      "platform": "web",
+      "url": "https://www.who.int/emergencies/disease-outbreak-news",
+      "collector": "web",
+      "sourceType": "health",
+      "region": "WORLD",
+      "country": "",
+      "languages": [
+        "en"
+      ],
+      "priority": "P0",
+      "reliability": "official",
+      "tags": [
+        "world-signal",
+        "world-authoritative-high-signal",
+        "no-corroboration-required",
+        "health-signal",
+        "who",
+        "outbreak"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": false,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 600,
+        "maxItemsPerPoll": 8,
+        "maxAgeHours": 168,
+        "includeUrlPatterns": [
+          "^https://(?:www\\.)?who\\.int/emergencies/disease-outbreak-news/item/"
+        ],
+        "minCandidateScore": 2,
+        "minArticleBodyLength": 180,
+        "minArticleWords": 25,
+        "worldSignalEnabled": true,
+        "worldSignalCandidateFloor": 20,
+        "worldSignalWatchScore": 50,
+        "worldSignalPublishScore": 70,
+        "worldSignalCorroborationHours": 24
+      }
+    },
+    {
+      "id": "world-icao-news",
+      "entityId": "icao",
+      "name": "ICAO Newsroom",
+      "platform": "web",
+      "url": "https://www.icao.int/news",
+      "collector": "web",
+      "sourceType": "aviation",
+      "region": "WORLD",
+      "country": "",
+      "languages": [
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "world-signal",
+        "world-authoritative",
+        "no-corroboration-required",
+        "aviation",
+        "travel"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": false,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 600,
+        "maxItemsPerPoll": 8,
+        "maxAgeHours": 168,
+        "minCandidateScore": 2,
+        "minArticleBodyLength": 140,
+        "minArticleWords": 20,
+        "worldSignalEnabled": true,
+        "worldSignalCandidateFloor": 20,
+        "worldSignalWatchScore": 50,
+        "worldSignalPublishScore": 70,
+        "worldSignalCorroborationHours": 24
+      },
+      "notes": "Routine aviation governance should remain below threshold; only systemic safety, airspace, major accident or travel-disruption signals should pass."
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+ARGUS Relay 1.6.8 — World Signal Foundation
+Local validation results
+
+PASS: npm run check
+PASS: atlas-bridge tests
+PASS: source-registry tests
+PASS: server-collector tests
+PASS: Maldives source-pack tests (40 sources)
+PASS: web-collector hardening tests
+PASS: CAP collector tests
+PASS: MMS weather collector tests
+PASS: world-signal scoring tests
+PASS: world source-pack tests (9 sources)
+PASS: world collector integration tests
+
+Combined source-pack import simulation:
+PASS: Maldives pack rows=40 created=40 invalid=0
+PASS: World pack rows=9 created=9 invalid=0
+PASS: Combined registry sources=49
+PASS: WORLD sources=9
+PASS: WORLD auto-collect sources=0
+
+World Signal regression coverage:
+PASS: sports headline filtered before AI
+PASS: uncorroborated high-impact media report held at WATCH
+PASS: second-source deterministic correlation promotes high-impact media report to PASS
+PASS: WHO-style authoritative outbreak signal can pass directly
+PASS: GDACS-style authoritative disaster signal can pass directly
+PASS: India/airspace event receives Maldives-relevance scoring
+PASS: accepted world payload carries region=WORLD and worldSignal metadata
+
+Existing behavior retained by regression suites:
+PASS: Atlas clean-first bridge
+PASS: Source Registry
+PASS: server collector bootstrap / isolation
+PASS: Maldives 40-source pack
+PASS: Web collector hardening
+PASS: MMS CAP
+PASS: routine forecast / marine / wave / tide parser tests
+
+Network/live verification:
+NOT CLAIMED. The local execution environment has no outbound DNS/network access.
+All nine world sources ship autoCollect=false and require real Railway dry-runs before enablement.

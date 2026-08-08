@@ -1,0 +1,40 @@
+ARGUS Relay 1.6.6 — MMS Weather Suite
+Local validation: PASS
+Date: 2026-08-09
+
+Commands:
+  npm run check
+  npm test
+
+Results:
+  Syntax/package checks: PASS
+  atlas-bridge tests passed
+  source-registry tests passed
+  server-collector tests passed
+  source-pack tests passed (40 sources)
+  web-collector hardening tests passed
+  cap-collector tests passed
+  met-weather-collector tests passed
+
+New 1.6.6 regression coverage:
+  PASS General Forecast extraction
+  PASS Marine Forecast extraction
+  PASS Wave Height extraction
+  PASS Advisory extraction
+  PASS validity start/end parsing
+  PASS day/night edition inference
+  PASS Tomorrow / Next 48 hrs / Next 72 hrs station outlook extraction
+  PASS MMS tide JSON/script time-height extraction
+  PASS unusable tide chart is skipped and retryable
+  PASS weather_forecast deterministic payload
+  PASS tide_forecast deterministic payload
+  PASS unchanged fixed forecast URL is deduplicated by content fingerprint
+  PASS changed forecast content creates a new capture identity
+
+Production proof still required:
+  - Railway startup for 1.6.6
+  - dry-run mv-met-routine-forecast
+  - dry-run mv-met-tide-predictions
+  - dry-run mv-met-cap-alerts
+
+Do not enable automatic server collection before these live dry-runs are reviewed.

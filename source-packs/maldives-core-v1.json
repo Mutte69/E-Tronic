@@ -1,0 +1,1142 @@
+{
+  "pack": "maldives-core-v1",
+  "description": "ARGUS Maldives core web source registry. Telegram and Viber remain on the Android notification collector.",
+  "sources": [
+    {
+      "entityId": "mv-met",
+      "name": "Maldives Meteorological Service",
+      "platform": "web",
+      "url": "https://meteorology.gov.mv/",
+      "collector": "web",
+      "sourceType": "weather",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P0",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "emergency",
+        "weather"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": false,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 120,
+        "maxItemsPerPoll": 8,
+        "discoveryUrl": "https://meteorology.gov.mv/news",
+        "includeUrlPatterns": [
+          "^https://(?:www\\.)?meteorology\\.gov\\.mv/(?:index\\.php/)?single-news/\\d+/?$"
+        ],
+        "excludeUrlPatterns": [
+          "/downloads/",
+          "/climate-data",
+          "/about",
+          "/contact",
+          "/reach-us",
+          "/forecast",
+          "/aviation",
+          "/awareness",
+          "/active_alerts"
+        ],
+        "maxAgeHours": 720,
+        "minCandidateScore": 4,
+        "minArticleBodyLength": 120,
+        "minArticleWords": 15
+      },
+      "notes": "Legacy MMS website/news collector retained for manual investigation only. Automatic collection disabled in favor of the official CAP alert feed."
+    },
+    {
+      "entityId": "mv-police",
+      "name": "Maldives Police Service",
+      "platform": "web",
+      "url": "https://www.police.gov.mv/",
+      "collector": "web",
+      "sourceType": "public_safety",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P0",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "emergency",
+        "police"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 120,
+        "maxItemsPerPoll": 8
+      }
+    },
+    {
+      "entityId": "mv-ndma",
+      "name": "National Disaster Management Authority",
+      "platform": "web",
+      "url": "https://ndma.gov.mv/en",
+      "collector": "web",
+      "sourceType": "emergency",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P0",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "emergency",
+        "disaster"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 120,
+        "maxItemsPerPoll": 8
+      }
+    },
+    {
+      "entityId": "mv-hpa",
+      "name": "Health Protection Agency",
+      "platform": "web",
+      "url": "https://hpa.gov.mv/en",
+      "collector": "web",
+      "sourceType": "health",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P0",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "health",
+        "alerts"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 180,
+        "maxItemsPerPoll": 8
+      }
+    },
+    {
+      "entityId": "mv-mfda",
+      "name": "Maldives Food and Drug Authority",
+      "platform": "web",
+      "url": "https://mfda.gov.mv/en",
+      "collector": "web",
+      "sourceType": "health",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "health",
+        "food",
+        "medicine"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 300,
+        "maxItemsPerPoll": 6
+      }
+    },
+    {
+      "entityId": "mv-presidency",
+      "name": "President's Office",
+      "platform": "web",
+      "url": "https://presidency.gov.mv/",
+      "collector": "web",
+      "sourceType": "government",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "government",
+        "presidency"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 180,
+        "maxItemsPerPoll": 8,
+        "includeUrlPatterns": [
+          "/Press/Article/"
+        ]
+      }
+    },
+    {
+      "entityId": "mv-immigration",
+      "name": "Maldives Immigration",
+      "platform": "web",
+      "url": "https://www.immigration.gov.mv/news",
+      "collector": "web",
+      "sourceType": "government",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "immigration",
+        "border"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 300,
+        "maxItemsPerPoll": 6
+      }
+    },
+    {
+      "entityId": "mv-foreign",
+      "name": "Ministry of Foreign Affairs",
+      "platform": "web",
+      "url": "https://foreign.gov.mv/",
+      "collector": "web",
+      "sourceType": "government",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "foreign_affairs"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 300,
+        "maxItemsPerPoll": 6
+      }
+    },
+    {
+      "entityId": "mv-finance",
+      "name": "Ministry of Finance and Planning",
+      "platform": "web",
+      "url": "https://finance.gov.mv/",
+      "collector": "web",
+      "sourceType": "finance",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "finance",
+        "budget"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 600,
+        "maxItemsPerPoll": 6
+      }
+    },
+    {
+      "entityId": "mv-health-ministry",
+      "name": "Ministry of Health",
+      "platform": "web",
+      "url": "https://health.gov.mv/en/news",
+      "collector": "web",
+      "sourceType": "health",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "health"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 300,
+        "maxItemsPerPoll": 6
+      }
+    },
+    {
+      "entityId": "mv-trade",
+      "name": "Ministry of Economic Development and Trade",
+      "platform": "web",
+      "url": "https://trade.gov.mv/en/",
+      "collector": "web",
+      "sourceType": "business",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "business",
+        "trade"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 600,
+        "maxItemsPerPoll": 6
+      }
+    },
+    {
+      "entityId": "mv-tourism",
+      "name": "Ministry of Tourism",
+      "platform": "web",
+      "url": "https://www.tourism.gov.mv/",
+      "collector": "web",
+      "sourceType": "tourism",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "tourism"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 600,
+        "maxItemsPerPoll": 6
+      }
+    },
+    {
+      "entityId": "mv-mma",
+      "name": "Maldives Monetary Authority",
+      "platform": "web",
+      "url": "https://www.mma.gov.mv/",
+      "collector": "web",
+      "sourceType": "finance",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "central_bank",
+        "economy"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 600,
+        "maxItemsPerPoll": 6
+      }
+    },
+    {
+      "entityId": "mv-mira",
+      "name": "Maldives Inland Revenue Authority",
+      "platform": "web",
+      "url": "https://mira.gov.mv/",
+      "collector": "web",
+      "sourceType": "finance",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "tax",
+        "revenue"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 600,
+        "maxItemsPerPoll": 8
+      }
+    },
+    {
+      "entityId": "mv-elections",
+      "name": "Elections Commission of Maldives",
+      "platform": "web",
+      "url": "https://www.elections.gov.mv/en",
+      "collector": "web",
+      "sourceType": "politics",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "elections"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 300,
+        "maxItemsPerPoll": 8
+      }
+    },
+    {
+      "entityId": "mv-majlis",
+      "name": "People's Majlis",
+      "platform": "web",
+      "url": "https://majlis.gov.mv/",
+      "collector": "web",
+      "sourceType": "politics",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "parliament",
+        "legislation"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 300,
+        "maxItemsPerPoll": 8
+      }
+    },
+    {
+      "entityId": "mv-acc",
+      "name": "Anti-Corruption Commission",
+      "platform": "web",
+      "url": "https://acc.gov.mv/en/media/news",
+      "collector": "web",
+      "sourceType": "accountability",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "anti_corruption"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 600,
+        "maxItemsPerPoll": 6
+      }
+    },
+    {
+      "entityId": "mv-audit",
+      "name": "Auditor General's Office",
+      "platform": "web",
+      "url": "https://audit.gov.mv/",
+      "collector": "web",
+      "sourceType": "accountability",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "audit"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 900,
+        "maxItemsPerPoll": 6
+      }
+    },
+    {
+      "entityId": "mv-pgo",
+      "name": "Prosecutor General's Office",
+      "platform": "web",
+      "url": "https://pgoffice.gov.mv/",
+      "collector": "web",
+      "sourceType": "justice",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "justice",
+        "prosecution"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 600,
+        "maxItemsPerPoll": 6
+      }
+    },
+    {
+      "entityId": "mv-caa",
+      "name": "Maldives Civil Aviation Authority",
+      "platform": "web",
+      "url": "https://www.caa.gov.mv/",
+      "collector": "web",
+      "sourceType": "transport",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "official",
+        "aviation"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 600,
+        "maxItemsPerPoll": 6
+      }
+    },
+    {
+      "entityId": "mv-macl",
+      "name": "Maldives Airports Company Limited",
+      "platform": "web",
+      "url": "https://macl.aero/",
+      "collector": "web",
+      "sourceType": "transport",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "airport",
+        "aviation",
+        "soe"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 300,
+        "maxItemsPerPoll": 6
+      }
+    },
+    {
+      "entityId": "mv-mtcc",
+      "name": "Maldives Transport and Contracting Company",
+      "platform": "web",
+      "url": "https://mtcc.mv/",
+      "collector": "web",
+      "sourceType": "transport",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "transport",
+        "soe",
+        "rtl"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 300,
+        "maxItemsPerPoll": 6
+      }
+    },
+    {
+      "entityId": "mv-rtl",
+      "name": "Raajje Transport Link",
+      "platform": "web",
+      "url": "https://rtl.mv/",
+      "collector": "web",
+      "sourceType": "transport",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "transport",
+        "ferry",
+        "bus"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 180,
+        "maxItemsPerPoll": 8
+      }
+    },
+    {
+      "entityId": "mv-stelco",
+      "name": "State Electric Company Limited",
+      "platform": "web",
+      "url": "https://stelco.com.mv/",
+      "collector": "web",
+      "sourceType": "utility",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "utility",
+        "electricity",
+        "soe"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 300,
+        "maxItemsPerPoll": 6
+      }
+    },
+    {
+      "entityId": "mv-mwsc",
+      "name": "Malé Water and Sewerage Company",
+      "platform": "web",
+      "url": "https://mwsc.com.mv/",
+      "collector": "web",
+      "sourceType": "utility",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "en"
+      ],
+      "priority": "P1",
+      "reliability": "official",
+      "tags": [
+        "utility",
+        "water",
+        "sewerage",
+        "soe"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 300,
+        "maxItemsPerPoll": 6
+      }
+    },
+    {
+      "entityId": "media-mihaaru",
+      "name": "Mihaaru",
+      "platform": "web",
+      "url": "https://mihaaru.com/",
+      "collector": "web",
+      "sourceType": "news",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv"
+      ],
+      "priority": "P2",
+      "reliability": "media",
+      "tags": [
+        "media",
+        "dhivehi"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 120,
+        "maxItemsPerPoll": 10
+      }
+    },
+    {
+      "entityId": "media-sun",
+      "name": "Sun Online",
+      "platform": "web",
+      "url": "https://sun.mv/",
+      "collector": "web",
+      "sourceType": "news",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P2",
+      "reliability": "media",
+      "tags": [
+        "media",
+        "dhivehi",
+        "english"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 120,
+        "maxItemsPerPoll": 10
+      }
+    },
+    {
+      "entityId": "media-adhadhu",
+      "name": "Adhadhu",
+      "platform": "web",
+      "url": "https://adhadhu.com/latest",
+      "collector": "web",
+      "sourceType": "news",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv"
+      ],
+      "priority": "P2",
+      "reliability": "media",
+      "tags": [
+        "media",
+        "dhivehi"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 120,
+        "maxItemsPerPoll": 10
+      }
+    },
+    {
+      "entityId": "media-dhuvas",
+      "name": "Dhuvas",
+      "platform": "web",
+      "url": "https://dhuvas.mv/",
+      "collector": "web",
+      "sourceType": "news",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv"
+      ],
+      "priority": "P2",
+      "reliability": "media",
+      "tags": [
+        "media",
+        "dhivehi"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 120,
+        "maxItemsPerPoll": 10
+      }
+    },
+    {
+      "entityId": "media-raajje",
+      "name": "Raajje",
+      "platform": "web",
+      "url": "https://raajje.mv/",
+      "collector": "web",
+      "sourceType": "news",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P2",
+      "reliability": "media",
+      "tags": [
+        "media"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 120,
+        "maxItemsPerPoll": 10
+      }
+    },
+    {
+      "entityId": "media-voice",
+      "name": "Voice Maldives",
+      "platform": "web",
+      "url": "https://voice.mv/",
+      "collector": "web",
+      "sourceType": "news",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv"
+      ],
+      "priority": "P2",
+      "reliability": "media",
+      "tags": [
+        "media",
+        "dhivehi"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 120,
+        "maxItemsPerPoll": 10
+      }
+    },
+    {
+      "entityId": "media-edition",
+      "name": "The Edition",
+      "platform": "web",
+      "url": "https://edition.mv/",
+      "collector": "web",
+      "sourceType": "news",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "en"
+      ],
+      "priority": "P2",
+      "reliability": "media",
+      "tags": [
+        "media",
+        "english"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 120,
+        "maxItemsPerPoll": 10
+      }
+    },
+    {
+      "entityId": "media-psm",
+      "name": "PSM News",
+      "platform": "web",
+      "url": "https://psmnews.mv/",
+      "collector": "web",
+      "sourceType": "news",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "dv",
+        "en"
+      ],
+      "priority": "P2",
+      "reliability": "state_media",
+      "tags": [
+        "media",
+        "public_service"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 120,
+        "maxItemsPerPoll": 10
+      }
+    },
+    {
+      "entityId": "media-thepress",
+      "name": "The Press",
+      "platform": "web",
+      "url": "https://en.thepress.mv/news",
+      "collector": "web",
+      "sourceType": "news",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "en"
+      ],
+      "priority": "P2",
+      "reliability": "media",
+      "tags": [
+        "media",
+        "english"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 120,
+        "maxItemsPerPoll": 10
+      }
+    },
+    {
+      "entityId": "media-mmtv",
+      "name": "MMTV",
+      "platform": "web",
+      "url": "https://en.mmtv.mv/maldives",
+      "collector": "web",
+      "sourceType": "news",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "en"
+      ],
+      "priority": "P2",
+      "reliability": "media",
+      "tags": [
+        "media",
+        "english"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 120,
+        "maxItemsPerPoll": 10
+      }
+    },
+    {
+      "entityId": "media-maldives-independent",
+      "name": "Maldives Independent",
+      "platform": "web",
+      "url": "https://maldivesindependent.com/",
+      "collector": "web",
+      "sourceType": "news",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "en"
+      ],
+      "priority": "P2",
+      "reliability": "media",
+      "tags": [
+        "media",
+        "english"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 180,
+        "maxItemsPerPoll": 8
+      }
+    },
+    {
+      "entityId": "media-mvplus",
+      "name": "MV+",
+      "platform": "web",
+      "url": "https://www.plus.mv/",
+      "collector": "web",
+      "sourceType": "news",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "en"
+      ],
+      "priority": "P2",
+      "reliability": "media",
+      "tags": [
+        "media",
+        "english"
+      ],
+      "collectorConfig": {
+        "mode": "web",
+        "autoCollect": true,
+        "bootstrapMode": "mark_seen",
+        "pollIntervalSeconds": 180,
+        "maxItemsPerPoll": 8
+      }
+    },
+    {
+      "id": "mv-met-routine-forecast",
+      "entityId": "mv-met",
+      "name": "Maldives Meteorological Service Routine Forecast",
+      "platform": "web",
+      "url": "https://meteorology.gov.mv/forecast",
+      "collector": "web",
+      "sourceType": "weather",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "en"
+      ],
+      "priority": "P0",
+      "reliability": "official",
+      "enabled": true,
+      "tags": [
+        "official",
+        "weather",
+        "forecast",
+        "marine",
+        "wave-height"
+      ],
+      "collectorConfig": {
+        "mode": "met_forecast",
+        "autoCollect": false,
+        "bootstrapMode": "mark_seen",
+        "discoveryUrl": "https://meteorology.gov.mv/forecast",
+        "pollIntervalSeconds": 300,
+        "maxItemsPerPoll": 1,
+        "maxAgeHours": 36,
+        "minArticleBodyLength": 80,
+        "minArticleWords": 5
+      },
+      "notes": "Deterministic MMS routine weather collector for general forecast, marine forecast, wave height, advisory and 3-day station outlook. Captures day/night editions when MMS changes the official forecast. Keep autoCollect false until Railway dry-run proves live freshness/extraction."
+    },
+    {
+      "id": "mv-met-tide-predictions",
+      "entityId": "mv-met",
+      "name": "Maldives Meteorological Service Tide Predictions",
+      "platform": "web",
+      "url": "https://meteorology.gov.mv/?pd=home",
+      "collector": "web",
+      "sourceType": "weather",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "en"
+      ],
+      "priority": "P0",
+      "reliability": "official",
+      "enabled": true,
+      "tags": [
+        "official",
+        "weather",
+        "tide",
+        "marine"
+      ],
+      "collectorConfig": {
+        "mode": "met_tide",
+        "autoCollect": false,
+        "bootstrapMode": "mark_seen",
+        "discoveryUrl": "https://meteorology.gov.mv/?pd=home",
+        "pollIntervalSeconds": 600,
+        "maxItemsPerPoll": 1,
+        "maxAgeHours": 48,
+        "minArticleBodyLength": 80,
+        "minArticleWords": 5
+      },
+      "notes": "Deterministic MMS tide-prediction collector for Hulhule, Hanimaadhoo and Gan. Supports visible DOM and embedded JSON/script chart data. Does not submit if numeric tide points cannot be extracted. Keep autoCollect false until Railway dry-run proves the live chart payload."
+    },
+    {
+      "id": "mv-met-cap-alerts",
+      "entityId": "mv-met",
+      "name": "Maldives Meteorological Service CAP Alerts",
+      "platform": "rss",
+      "url": "https://cap.meteorology.gov.mv/rss/alerts/",
+      "collector": "rss",
+      "sourceType": "weather",
+      "region": "MV",
+      "country": "MV",
+      "languages": [
+        "en"
+      ],
+      "priority": "P0",
+      "reliability": "official",
+      "enabled": true,
+      "tags": [
+        "official",
+        "emergency",
+        "weather",
+        "cap",
+        "alerts"
+      ],
+      "collectorConfig": {
+        "mode": "cap",
+        "autoCollect": false,
+        "bootstrapMode": "mark_seen",
+        "feedUrl": "https://cap.meteorology.gov.mv/rss/alerts/",
+        "pollIntervalSeconds": 60,
+        "maxItemsPerPoll": 10,
+        "maxAgeHours": 168,
+        "minArticleBodyLength": 80,
+        "minArticleWords": 5
+      },
+      "notes": "Official Maldives Meteorological Service CAP feed registered by WMO. Keep autoCollect false until a real Railway dry-run verifies the live feed and linked CAP documents."
+    }
+  ]
+}

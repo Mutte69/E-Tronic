@@ -1,0 +1,46 @@
+{
+  "sources": [
+    {
+      "name": "Maldives Police Service",
+      "entityId": "mv-police",
+      "platform": "web",
+      "url": "https://www.police.gov.mv/",
+      "collector": "web",
+      "sourceType": "public_safety",
+      "region": "MV",
+      "country": "MV",
+      "languages": ["dv", "en"],
+      "priority": "P0",
+      "reliability": "official",
+      "enabled": true
+    },
+    {
+      "name": "Maldives Police Service",
+      "entityId": "mv-police",
+      "platform": "x",
+      "url": "https://x.com/PoliceMv",
+      "collector": "x",
+      "sourceType": "public_safety",
+      "region": "MV",
+      "country": "MV",
+      "languages": ["dv", "en"],
+      "priority": "P0",
+      "reliability": "official",
+      "enabled": true
+    },
+    {
+      "name": "Maldives Meteorological Service",
+      "entityId": "mv-met",
+      "platform": "web",
+      "url": "https://meteorology.gov.mv/",
+      "collector": "web",
+      "sourceType": "weather",
+      "region": "MV",
+      "country": "MV",
+      "languages": ["dv", "en"],
+      "priority": "P0",
+      "reliability": "official",
+      "enabled": true
+    }
+  ]
+}

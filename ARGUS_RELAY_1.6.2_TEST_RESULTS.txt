@@ -1,0 +1,17 @@
+ARGUS Relay 1.6.2 — MET Discovery Hotfix
+Test date: 2026-08-08
+
+PASS source-registry tests
+PASS server-collector tests
+PASS source-pack tests (37 sources)
+PASS web-collector hardening tests
+PASS MMS image/icon-only anchor discovery regression
+PASS MMS /index.php/single-news/<id> discovery regression
+PASS MMS downloads/service exclusion regression
+PASS npm run check
+
+Runtime acceptance still required:
+1. Deploy 1.6.2 to Railway.
+2. Keep ARGUS_SERVER_COLLECTORS_ENABLED=false.
+3. Re-run MET-only dry-run.
+4. Require discovered > 0 and at least one /single-news/ or /index.php/single-news/ result with real extracted body before enabling any automatic collector.

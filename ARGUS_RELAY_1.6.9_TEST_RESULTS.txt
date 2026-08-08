@@ -1,0 +1,25 @@
+ARGUS Relay 1.6.9 — World Signal Quality Hardening
+
+npm test: PASS
+- atlas-bridge tests passed
+- source-registry tests passed
+- server-collector tests passed
+- source-pack tests passed (40 Maldives/MMS sources)
+- web-collector hardening tests passed
+- cap-collector tests passed
+- met-weather-collector tests passed
+- world-signal tests passed
+- world-source-pack tests passed (9 world sources)
+- world-collector tests passed
+
+New regressions covered:
+- remote M5.6 earthquake without material impact => REJECT before AI
+- M7+ authoritative earthquake => PASS
+- PAGER yellow lower-magnitude damaging earthquake => PASS
+- USGS GeoJSON parsing preserves magnitude/depth/PAGER/MMI/felt/tsunami/significance
+- USGS structured body does not contain browser-support boilerplate
+- USGS low-impact dry-run result => world_filtered_pre_ai
+
+npm run check: PASS
+Automatic world collectors: OFF by source config
+Global server collector switch must remain OFF during dry-run verification.

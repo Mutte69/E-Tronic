@@ -1,29 +1,17 @@
 {
-  "name": "etronic-website",
-  "version": "1.0.0",
+  "name": "argus-relay",
+  "version": "1.6.10",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start -p $PORT",
-    "lint": "next lint"
+    "start": "node server.js",
+    "check": "node --check server.js && node --check atlas-bridge.js && node --check source-registry.js && node --check server-collector.js && node --check test-atlas-bridge.mjs && node --check test-source-registry.mjs && node --check test-server-collector.mjs && node --check test-source-pack.mjs && node --check test-web-collector-hardening.mjs && node --check test-cap-collector.mjs && node --check test-met-weather-collector.mjs && node --check world-signal.js && node --check test-world-signal.mjs && node --check test-world-source-pack.mjs && node --check test-world-collector.mjs",
+    "test": "node test-atlas-bridge.mjs && node test-source-registry.mjs && node test-server-collector.mjs && node test-source-pack.mjs && node test-web-collector-hardening.mjs && node test-cap-collector.mjs && node test-met-weather-collector.mjs && node test-world-signal.mjs && node test-world-source-pack.mjs && node test-world-collector.mjs"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "dependencies": {
-    "@supabase/ssr": "^0.5.2",
-    "@supabase/supabase-js": "^2.45.4",
-    "jspdf": "^2.5.2",
-    "xlsx": "^0.18.5",
-    "next": "14.2.35",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
-  },
-  "devDependencies": {
-    "@types/node": "^20.14.10",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "autoprefixer": "^10.4.19",
-    "postcss": "^8.4.39",
-    "tailwindcss": "^3.4.4",
-    "typescript": "^5.5.3"
+    "express": "^4.21.2"
   }
 }
