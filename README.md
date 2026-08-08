@@ -108,19 +108,22 @@ item, the total, and their details — they just hit send.
 Repeat step 1.3 in Supabase (**Authentication > Users > Add user**) —
 no code changes needed.
 
-## Using a custom domain instead of railway.app
+## Custom domain: etronic.store
 
-The site currently lives at `*.up.railway.app`. To use your own domain
-(e.g. `etronic.mv`) instead:
+The site now points to **etronic.store**. If you ever need to redo this
+(new registrar, domain expires and gets re-added, etc.), here's the
+process:
 
-1. Buy the domain from any registrar (GoDaddy, Namecheap, dot.mv for
-   Maldivian domains, etc.)
-2. In Railway, open this service → **Settings → Networking → Custom
-   Domain** → enter your domain
-3. Railway gives you a CNAME record to add — go to your domain
-   registrar's DNS settings and add that record exactly as shown
-4. Wait for DNS to propagate (usually 10 minutes to a few hours) —
+1. In Railway, open this service → **Settings → Networking → Custom
+   Domain** → enter `etronic.store` (and `www.etronic.store` if you
+   want the www version too)
+2. Railway gives you a CNAME record (or an A/ALIAS record for the
+   root domain, depending on your registrar) — go to wherever
+   `etronic.store` was bought, open its DNS settings, and add that
+   record exactly as Railway shows it
+3. Wait for DNS to propagate (usually 10 minutes to a few hours) —
    Railway will show the domain as verified once it's live
-5. Update `metadataBase` in `src/app/layout.tsx` to your new domain, so
-   link previews (WhatsApp, etc.) use the right URL
+4. `metadataBase` in `src/app/layout.tsx` is already set to
+   `https://etronic.store`, so link previews (WhatsApp, etc.) use the
+   right URL out of the box
 
