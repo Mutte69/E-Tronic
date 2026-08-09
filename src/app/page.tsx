@@ -32,8 +32,30 @@ export default async function HomePage({
   const rest = allProducts.filter((p) => !p.featured);
   const s = (settings as Settings) ?? null;
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "ElectronicsStore",
+    name: s?.business_name || "E Tronic",
+    image: "https://etronic.store/etronic-mark.png",
+    url: "https://etronic.store",
+    telephone: s?.phone || undefined,
+    address: s?.address
+      ? {
+          "@type": "PostalAddress",
+          streetAddress: s.address,
+          addressLocality: "Male'",
+          addressCountry: "MV",
+        }
+      : undefined,
+    priceRange: "$$",
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <Header />
 
       {searchParams?.order_error && (
