@@ -220,6 +220,9 @@ export default async function InvoiceViewPage({
               For {s?.business_name || "E Tronic"}
             </p>
           </div>
+          <p className="font-body text-[11px] italic text-muted mt-3">
+            This is a computer-generated invoice. No signature is required.
+          </p>
         </div>
 
         <div className="mt-6 border border-line rounded-lg bg-surface p-6 print:hidden">

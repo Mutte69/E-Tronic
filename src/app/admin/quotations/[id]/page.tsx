@@ -182,7 +182,7 @@ export default async function QuotationViewPage({
           </div>
 
           {(q.delivery_terms || q.payment_terms) && (
-            <div className="border-t border-line pt-6 space-y-1.5">
+            <div className="border-t border-line pt-6 space-y-1.5 mb-6">
               {q.delivery_terms && (
                 <p className="font-body text-xs text-muted">
                   <span className="font-medium text-paper">Delivery:</span> {q.delivery_terms}
@@ -195,6 +195,10 @@ export default async function QuotationViewPage({
               )}
             </div>
           )}
+
+          <p className="font-body text-[11px] italic text-muted border-t border-line pt-4">
+            This is a computer-generated quotation. No signature is required.
+          </p>
         </div>
       </main>
     </div>

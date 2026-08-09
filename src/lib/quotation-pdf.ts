@@ -257,5 +257,18 @@ export async function downloadQuotationPdf(quotation: Quotation, settings: Setti
     }
   }
 
+  y += 24;
+  doc.setDrawColor(...HAIRLINE);
+  doc.line(margin, y, pageWidth - margin, y);
+  y += 16;
+  doc.setFont("helvetica", "italic");
+  doc.setFontSize(7.5);
+  doc.setTextColor(...MUTED);
+  doc.text(
+    "This is a computer-generated quotation. No signature is required.",
+    margin,
+    y
+  );
+
   doc.save(`etronic-quote-${quotation.quotation_no}.pdf`);
 }

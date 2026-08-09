@@ -291,6 +291,13 @@ export async function downloadInvoicePdf(invoice: Invoice, settings: Settings | 
   y += 20;
   doc.setFont("helvetica", "italic");
   doc.text("Thank you for your business.", margin, y);
+  y += 14;
+  doc.setFontSize(7.5);
+  doc.text(
+    "This is a computer-generated invoice. No signature is required.",
+    margin,
+    y
+  );
 
   doc.save(`etronic-invoice-${invoice.invoice_no}.pdf`);
 }
