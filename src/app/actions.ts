@@ -177,7 +177,11 @@ export async function createPublicQuotation({
     p_subtotal: subtotal,
   });
 
-  if (error || !data || data.length === 0) {
+  if (error) {
+    console.error("create_customer_quotation failed:", error.message);
+    return { ok: false, error: `Could not create quotation: ${error.message}` };
+  }
+  if (!data || data.length === 0) {
     return { ok: false, error: "Something went wrong creating your quotation. Please try again." };
   }
 

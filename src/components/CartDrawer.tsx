@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/lib/cart-context";
 import { createOrder, createPublicQuotation } from "@/app/actions";
 import { downloadQuotationPdf } from "@/lib/quotation-pdf";
@@ -10,12 +10,15 @@ import type { Settings } from "@/lib/types";
 export default function CartDrawer({ settings }: { settings: Settings | null }) {
   const { items, removeItem, setQty, subtotal, count, clear } = useCart();
   const [open, setOpen] = useState(false);
-  const [checkingOut, setCheckingOut] = useState(false);
   const [renderedAt, setRenderedAt] = useState(0);
   const [quoting, setQuoting] = useState(false);
   const [quoteError, setQuoteError] = useState<string | null>(null);
   const [quoteDone, setQuoteDone] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (open && !renderedAt) setRenderedAt(Date.now());
+  }, [open, renderedAt]);
 
   async function handleGetQuotation() {
     if (!formRef.current) return;
@@ -43,9 +46,12 @@ export default function CartDrawer({ settings }: { settings: Settings | null }) 
         : null;
       setQuoteDone(validUntil);
       clear();
-      setCheckingOut(false);
-    } catch {
-      setQuoteError("Something went wrong creating your quotation. Please try again.");
+    } catch (err) {
+      setQuoteError(
+        err instanceof Error
+          ? `Something went wrong: ${err.message}`
+          : "Something went wrong creating your quotation. Please try again."
+      );
     } finally {
       setQuoting(false);
     }
@@ -159,17 +165,7 @@ export default function CartDrawer({ settings }: { settings: Settings | null }) 
                   </span>
                 </div>
 
-                {!checkingOut ? (
-                  <button
-                    onClick={() => {
-                      setCheckingOut(true);
-                      setRenderedAt(Date.now());
-                    }}
-                    className="w-full rounded-md bg-copper hover:bg-copper-bright transition-colors text-ink font-body text-sm font-medium py-2.5"
-                  >
-                    Checkout
-                  </button>
-                ) : (
+                {(
                   <form ref={formRef} action={createOrder} onSubmit={() => clear()} className="space-y-3">
                     <input type="hidden" name="items" value={JSON.stringify(items)} />
                     <input type="hidden" name="form_rendered_at" value={renderedAt} />

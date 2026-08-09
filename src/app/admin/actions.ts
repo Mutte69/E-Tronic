@@ -83,6 +83,7 @@ export async function createProduct(formData: FormData) {
     stock_qty: formData.get("stock_qty")
       ? Math.max(0, Math.round(parsePrice(formData.get("stock_qty"))))
       : null,
+    category_id: String(formData.get("category_id") ?? "").trim() || null,
     image_url: imageUrl,
     featured: formData.get("featured") === "on",
     in_stock: formData.get("in_stock") === "on",
@@ -110,6 +111,7 @@ export async function updateProduct(id: string, formData: FormData) {
     stock_qty: formData.get("stock_qty")
       ? Math.max(0, Math.round(parsePrice(formData.get("stock_qty"))))
       : null,
+    category_id: String(formData.get("category_id") ?? "").trim() || null,
     featured: formData.get("featured") === "on",
     in_stock: formData.get("in_stock") === "on",
     updated_at: new Date().toISOString(),
@@ -491,6 +493,29 @@ export async function deleteDeliveryNote(id: string) {
 
   revalidatePath("/admin/delivery-notes");
   redirect("/admin/delivery-notes");
+}
+
+export async function createCategory(formData: FormData) {
+  const supabase = createClient();
+  const name = String(formData.get("name") ?? "").trim();
+  if (!name) return;
+
+  const { error } = await supabase.from("categories").insert({ name });
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath("/admin/categories");
+}
+
+export async function deleteCategory(id: string) {
+  const supabase = createClient();
+  const { error } = await supabase.from("categories").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath("/admin/categories");
 }
 
 export async function updateSettings(formData: FormData) {

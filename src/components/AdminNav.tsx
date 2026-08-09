@@ -4,6 +4,7 @@ import { signOut } from "@/app/admin/actions";
 export default function AdminNav({ active }: { active: string }) {
   const links = [
     { href: "/admin", label: "Products" },
+    { href: "/admin/categories", label: "Categories" },
     { href: "/admin/orders", label: "Orders" },
     { href: "/admin/quotations", label: "Quotations" },
     { href: "/admin/invoices", label: "Invoices" },

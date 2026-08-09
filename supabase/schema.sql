@@ -289,3 +289,28 @@ create policy "Authenticated can manage delivery notes"
   to authenticated
   using (true)
   with check (true);
+
+-- 8. CATEGORIES TABLE
+create table if not exists categories (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now()
+);
+
+alter table categories enable row level security;
+
+drop policy if exists "Public can view categories" on categories;
+create policy "Public can view categories"
+  on categories for select
+  to anon, authenticated
+  using (true);
+
+drop policy if exists "Authenticated can manage categories" on categories;
+create policy "Authenticated can manage categories"
+  on categories for all
+  to authenticated
+  using (true)
+  with check (true);
+
+alter table products add column if not exists category_id uuid references categories(id) on delete set null;

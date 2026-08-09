@@ -2,9 +2,10 @@ import { createClient } from "@/lib/supabase/server";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
+import ProductBrowser from "@/components/ProductBrowser";
 import HeroShowcase from "@/components/HeroShowcase";
 import CartDrawer from "@/components/CartDrawer";
-import type { Product, Settings } from "@/lib/types";
+import type { Product, Settings, Category } from "@/lib/types";
 
 export const revalidate = 0;
 
@@ -15,14 +16,17 @@ export default async function HomePage({
 }) {
   const supabase = createClient();
 
-  const [{ data: products }, { data: settings }] = await Promise.all([
+  const [{ data: products }, { data: settings }, { data: categoriesData }] = await Promise.all([
     supabase
       .from("products")
-      .select("id,name,code,caption,price,stock_qty,image_url,featured,sort_order,in_stock,created_at,updated_at")
+      .select("id,name,code,caption,price,stock_qty,category_id,image_url,featured,sort_order,in_stock,created_at,updated_at")
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: false }),
     supabase.from("settings").select("*").eq("id", 1).single(),
+    supabase.from("categories").select("*").order("sort_order").order("created_at"),
   ]);
+
+  const categories = (categoriesData ?? []) as Category[];
 
   const allProducts = ((products ?? []) as Omit<Product, "cost_price">[]).map((p) => ({
     ...p,
@@ -154,12 +158,8 @@ export default async function HomePage({
             No products listed yet. Check back soon.
           </p>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-            {rest.map((p, i) => (
-              <div key={p.id} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(i * 60, 400)}ms` }}>
-                <ProductCard product={p} />
-              </div>
-            ))}
+          <div className="mt-4">
+            <ProductBrowser products={rest} categories={categories} />
           </div>
         )}
       </section>

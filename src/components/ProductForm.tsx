@@ -2,16 +2,18 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import type { Product } from "@/lib/types";
+import type { Product, Category } from "@/lib/types";
 import { generateProductCard } from "@/lib/card-generator";
 import SubmitButton from "@/components/SubmitButton";
 
 export default function ProductForm({
   product,
   action,
+  categories = [],
 }: {
   product?: Product;
   action: (formData: FormData) => void;
+  categories?: Category[];
 }) {
   const nameRef = useRef<HTMLInputElement>(null);
   const priceRef = useRef<HTMLInputElement>(null);
@@ -209,6 +211,27 @@ export default function ProductForm({
           out at zero. Leave blank to just use the "In stock" switch below.
         </p>
       </div>
+
+      {categories.length > 0 && (
+        <div>
+          <label className="block font-body text-xs text-muted mb-1" htmlFor="category_id">
+            Category <span className="text-muted">(optional)</span>
+          </label>
+          <select
+            id="category_id"
+            name="category_id"
+            defaultValue={product?.category_id ?? ""}
+            className="w-full rounded-md bg-surface-raised border border-line px-3 py-2 font-body text-sm text-paper focus:border-copper outline-none"
+          >
+            <option value="">No category</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div className="flex items-center gap-6">
         <label className="flex items-center gap-2 font-body text-sm text-paper">
