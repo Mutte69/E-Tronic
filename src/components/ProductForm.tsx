@@ -18,12 +18,17 @@ export default function ProductForm({
   const nameRef = useRef<HTMLInputElement>(null);
   const priceRef = useRef<HTMLInputElement>(null);
   const hiddenImageRef = useRef<HTMLInputElement>(null);
+  const extraInputRef = useRef<HTMLInputElement>(null);
 
   const [rawFile, setRawFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(product?.image_url ?? null);
   const [cardReady, setCardReady] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [keepImages, setKeepImages] = useState<string[]>(product?.images ?? []);
+  const [extraPreviews, setExtraPreviews] = useState<string[]>([]);
+  const MAX_EXTRA = 4;
 
   function handleRawFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
@@ -65,6 +70,25 @@ export default function ProductForm({
   }
 
   const needsCard = rawFile && !cardReady;
+
+  function handleExtraFilesChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    const remaining = MAX_EXTRA - keepImages.length;
+
+    if (files.length > remaining) {
+      const trimmed = files.slice(0, Math.max(0, remaining));
+      const dt = new DataTransfer();
+      trimmed.forEach((f) => dt.items.add(f));
+      if (extraInputRef.current) extraInputRef.current.files = dt.files;
+      setExtraPreviews(trimmed.map((f) => URL.createObjectURL(f)));
+    } else {
+      setExtraPreviews(files.map((f) => URL.createObjectURL(f)));
+    }
+  }
+
+  function removeKeptImage(url: string) {
+    setKeepImages((prev) => prev.filter((u) => u !== url));
+  }
 
   return (
     <form action={action} className="space-y-5 max-w-lg">
@@ -188,6 +212,65 @@ export default function ProductForm({
         )}
         {error && (
           <p className="font-body text-xs text-copper-bright mt-2">{error}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="block font-body text-xs text-muted mb-1">
+          More photos <span className="text-muted">(optional — up to 5 total with the main one)</span>
+        </label>
+
+        {keepImages.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-2">
+            {keepImages.map((url) => (
+              <div
+                key={url}
+                className="relative w-20 h-20 rounded-md overflow-hidden border border-line"
+              >
+                <Image src={url} alt="" fill className="object-cover" />
+                <button
+                  type="button"
+                  onClick={() => removeKeptImage(url)}
+                  className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-ink/80 text-paper text-[10px] flex items-center justify-center"
+                  aria-label="Remove photo"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <input type="hidden" name="keep_images" value={JSON.stringify(keepImages)} />
+
+        {keepImages.length < MAX_EXTRA && (
+          <>
+            <input
+              ref={extraInputRef}
+              type="file"
+              name="extra_images"
+              accept="image/*"
+              multiple
+              onChange={handleExtraFilesChange}
+              className="w-full font-body text-sm text-muted file:mr-3 file:rounded-md file:border-0 file:bg-surface-raised file:text-paper file:text-xs file:font-medium file:px-3 file:py-2 file:border file:border-line"
+            />
+            {extraPreviews.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {extraPreviews.map((url, i) => (
+                  <div
+                    key={i}
+                    className="relative w-20 h-20 rounded-md overflow-hidden border border-line"
+                  >
+                    <Image src={url} alt="" fill className="object-cover" />
+                  </div>
+                ))}
+              </div>
+            )}
+            <p className="font-body text-[11px] text-muted mt-1">
+              These show in the customer's photo gallery when they view the
+              item — no branding needed on these, plain photos are fine.
+            </p>
+          </>
         )}
       </div>
 

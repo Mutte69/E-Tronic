@@ -105,14 +105,14 @@ export async function createPublicQuotation({
   items,
   customerName,
   customerPhone,
-  customerAddress,
+  customerTin,
   formRenderedAt,
   honeypot,
 }: {
   items: CartLineItem[];
   customerName: string;
   customerPhone: string;
-  customerAddress: string;
+  customerTin: string;
   formRenderedAt: number;
   honeypot: string;
 }): Promise<{ ok: true; quotation: Quotation } | { ok: false; error: string }> {
@@ -125,10 +125,10 @@ export async function createPublicQuotation({
 
   const name = customerName.trim();
   const phone = customerPhone.trim();
-  const address = customerAddress.trim();
+  const tin = customerTin.trim();
 
-  if (!name || !phone || !address || items.length === 0) {
-    return { ok: false, error: "Please fill in your name, phone, and address." };
+  if (!name || !phone || items.length === 0) {
+    return { ok: false, error: "Please fill in your name and contact number." };
   }
 
   const supabase = createClient();
@@ -172,9 +172,9 @@ export async function createPublicQuotation({
   const { data, error } = await supabase.rpc("create_customer_quotation", {
     p_customer_name: name,
     p_customer_phone: phone,
-    p_customer_address: address,
     p_items: verifiedItems,
     p_subtotal: subtotal,
+    p_customer_tin: tin || null,
   });
 
   if (error) {

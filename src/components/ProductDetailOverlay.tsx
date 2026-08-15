@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import type { Product } from "@/lib/types";
@@ -17,10 +17,17 @@ export default function ProductDetailOverlay({
   onClose: () => void;
 }) {
   const [mounted, setMounted] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const touchStartX = useRef<number | null>(null);
+  const touchDeltaX = useRef(0);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (open) setActiveIndex(0);
+  }, [open, product?.id]);
 
   useEffect(() => {
     if (!open) return;
@@ -35,6 +42,33 @@ export default function ProductDetailOverlay({
 
   const inStock = isInStock(product);
   const lowStock = lowStockLabel(product);
+  const gallery = [product.image_url, ...(product.images ?? [])].filter(
+    (url): url is string => !!url
+  );
+  const activeUrl = gallery[activeIndex] ?? gallery[0] ?? null;
+
+  function goTo(i: number) {
+    setActiveIndex((i + gallery.length) % gallery.length);
+  }
+
+  function handleTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.touches[0].clientX;
+    touchDeltaX.current = 0;
+  }
+
+  function handleTouchMove(e: React.TouchEvent) {
+    if (touchStartX.current == null) return;
+    touchDeltaX.current = e.touches[0].clientX - touchStartX.current;
+  }
+
+  function handleTouchEnd() {
+    if (Math.abs(touchDeltaX.current) > 50) {
+      if (touchDeltaX.current < 0) goTo(activeIndex + 1);
+      else goTo(activeIndex - 1);
+    }
+    touchStartX.current = null;
+    touchDeltaX.current = 0;
+  }
 
   const view = (
     <div
@@ -55,25 +89,69 @@ export default function ProductDetailOverlay({
           open ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
         }`}
       >
-        <div className="relative w-full h-[45vh] md:h-screen md:w-1/2 bg-surface-raised shrink-0">
-          {product.image_url ? (
-            <Image
-              src={product.image_url}
-              alt={product.name}
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-contain"
-              priority={open}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center font-mono text-xs text-muted">
-              no image
+        <div className="w-full md:w-1/2 shrink-0">
+          <div
+            className="relative w-full h-[45vh] md:h-screen bg-surface-raised select-none"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            {activeUrl ? (
+              <Image
+                src={activeUrl}
+                alt={product.name}
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-contain"
+                priority={open}
+                draggable={false}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center font-mono text-xs text-muted">
+                no image
+              </div>
+            )}
+            {product.featured && (
+              <span className="absolute bottom-4 left-4 font-mono text-[10px] tracking-widest uppercase bg-copper text-ink px-2 py-1 rounded-sm">
+                Featured
+              </span>
+            )}
+
+            {gallery.length > 1 && (
+              <>
+                <button
+                  onClick={() => goTo(activeIndex - 1)}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-ink/70 text-paper flex items-center justify-center hover:bg-ink transition-colors"
+                  aria-label="Previous photo"
+                >
+                  ‹
+                </button>
+                <button
+                  onClick={() => goTo(activeIndex + 1)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-ink/70 text-paper flex items-center justify-center hover:bg-ink transition-colors"
+                  aria-label="Next photo"
+                >
+                  ›
+                </button>
+              </>
+            )}
+          </div>
+
+          {gallery.length > 1 && (
+            <div className="flex gap-2 p-4 overflow-x-auto md:absolute md:bottom-4 md:left-4 md:right-auto md:p-0 md:bg-transparent">
+              {gallery.map((url, i) => (
+                <button
+                  key={url + i}
+                  onClick={() => setActiveIndex(i)}
+                  className={`relative w-14 h-14 rounded-md overflow-hidden border shrink-0 transition-colors ${
+                    i === activeIndex ? "border-copper" : "border-line/60 hover:border-line"
+                  }`}
+                  aria-label={`Photo ${i + 1}`}
+                >
+                  <Image src={url} alt="" fill className="object-cover" />
+                </button>
+              ))}
             </div>
-          )}
-          {product.featured && (
-            <span className="absolute bottom-4 left-4 font-mono text-[10px] tracking-widest uppercase bg-copper text-ink px-2 py-1 rounded-sm">
-              Featured
-            </span>
           )}
         </div>
 

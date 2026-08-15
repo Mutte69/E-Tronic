@@ -8,6 +8,7 @@ export type Product = {
   stock_qty: number | null;
   category_id: string | null;
   image_url: string | null;
+  images: string[];
   featured: boolean;
   sort_order: number;
   in_stock: boolean;

@@ -19,7 +19,7 @@ export default async function HomePage({
   const [{ data: products }, { data: settings }, { data: categoriesData }] = await Promise.all([
     supabase
       .from("products")
-      .select("id,name,code,caption,price,stock_qty,category_id,image_url,featured,sort_order,in_stock,created_at,updated_at")
+      .select("id,name,code,caption,price,stock_qty,category_id,image_url,images,featured,sort_order,in_stock,created_at,updated_at")
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: false }),
     supabase.from("settings").select("*").eq("id", 1).single(),

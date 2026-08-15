@@ -68,9 +68,36 @@ async function deleteStorageImage(
   await supabase.storage.from("product-images").remove([path]);
 }
 
+async function uploadExtraImages(
+  supabase: ReturnType<typeof createClient>,
+  formData: FormData
+): Promise<string[]> {
+  const files = formData.getAll("extra_images") as File[];
+  const urls: string[] = [];
+
+  for (const file of files) {
+    if (!file || file.size === 0) continue;
+    const ext = file.name.split(".").pop() || "jpg";
+    const path = `${crypto.randomUUID()}.${ext}`;
+
+    const { error } = await supabase.storage
+      .from("product-images")
+      .upload(path, file, { contentType: file.type, upsert: false });
+    if (error) throw new Error(error.message);
+
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("product-images").getPublicUrl(path);
+    urls.push(publicUrl);
+  }
+
+  return urls;
+}
+
 export async function createProduct(formData: FormData) {
   const supabase = createClient();
   const imageUrl = await uploadImageIfPresent(supabase, formData);
+  const extraImages = await uploadExtraImages(supabase, formData);
 
   const { error } = await supabase.from("products").insert({
     name: String(formData.get("name") ?? "").trim(),
@@ -85,6 +112,7 @@ export async function createProduct(formData: FormData) {
       : null,
     category_id: String(formData.get("category_id") ?? "").trim() || null,
     image_url: imageUrl,
+    images: extraImages,
     featured: formData.get("featured") === "on",
     in_stock: formData.get("in_stock") === "on",
   });
@@ -99,6 +127,14 @@ export async function createProduct(formData: FormData) {
 export async function updateProduct(id: string, formData: FormData) {
   const supabase = createClient();
   const imageUrl = await uploadImageIfPresent(supabase, formData);
+  const newExtraImages = await uploadExtraImages(supabase, formData);
+
+  let keepImages: string[] = [];
+  try {
+    keepImages = JSON.parse(String(formData.get("keep_images") ?? "[]"));
+  } catch {
+    keepImages = [];
+  }
 
   const update: Record<string, unknown> = {
     name: String(formData.get("name") ?? "").trim(),
@@ -112,19 +148,27 @@ export async function updateProduct(id: string, formData: FormData) {
       ? Math.max(0, Math.round(parsePrice(formData.get("stock_qty"))))
       : null,
     category_id: String(formData.get("category_id") ?? "").trim() || null,
+    images: [...keepImages, ...newExtraImages],
     featured: formData.get("featured") === "on",
     in_stock: formData.get("in_stock") === "on",
     updated_at: new Date().toISOString(),
   };
+
+  const { data: existing } = await supabase
+    .from("products")
+    .select("image_url, images")
+    .eq("id", id)
+    .single();
+
   if (imageUrl) {
-    const { data: existing } = await supabase
-      .from("products")
-      .select("image_url")
-      .eq("id", id)
-      .single();
     update.image_url = imageUrl;
     if (existing?.image_url) await deleteStorageImage(supabase, existing.image_url);
   }
+
+  const removedImages = (existing?.images ?? []).filter(
+    (url: string) => !keepImages.includes(url)
+  );
+  for (const url of removedImages) await deleteStorageImage(supabase, url);
 
   const { error } = await supabase.from("products").update(update).eq("id", id);
   if (error) throw new Error(error.message);
@@ -138,7 +182,7 @@ export async function deleteProduct(id: string) {
   const supabase = createClient();
   const { data: existing } = await supabase
     .from("products")
-    .select("image_url")
+    .select("image_url, images")
     .eq("id", id)
     .single();
 
@@ -146,6 +190,7 @@ export async function deleteProduct(id: string) {
   if (error) throw new Error(error.message);
 
   if (existing?.image_url) await deleteStorageImage(supabase, existing.image_url);
+  for (const url of existing?.images ?? []) await deleteStorageImage(supabase, url);
 
   revalidatePath("/");
   revalidatePath("/admin");

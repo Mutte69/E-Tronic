@@ -13,6 +13,7 @@ create table if not exists products (
   cost_price numeric(10,2),
   stock_qty int,
   image_url text,
+  images text[] not null default '{}',
   featured boolean not null default false,
   sort_order int not null default 0,
   in_stock boolean not null default true,
@@ -23,6 +24,7 @@ create table if not exists products (
 alter table products add column if not exists cost_price numeric(10,2);
 alter table products add column if not exists code text;
 alter table products add column if not exists stock_qty int;
+alter table products add column if not exists images text[] not null default '{}';
 
 alter table products enable row level security;
 
@@ -229,12 +231,14 @@ drop policy if exists "Public can create quotations" on quotations;
 -- direct table policy) so pricing/discount/valid-until are always set
 -- server-side, and a customer can never read other people's quotations —
 -- the function returns just the row it created.
+drop function if exists public.create_customer_quotation(text, text, text, jsonb, numeric);
+
 create or replace function public.create_customer_quotation(
   p_customer_name text,
   p_customer_phone text,
-  p_customer_address text,
   p_items jsonb,
-  p_subtotal numeric
+  p_subtotal numeric,
+  p_customer_tin text default null
 ) returns setof quotations
 language plpgsql
 security definer
@@ -244,11 +248,11 @@ declare
   v_id uuid;
 begin
   insert into quotations (
-    customer_name, customer_phone, customer_address, items,
+    customer_name, customer_phone, customer_tin, items,
     subtotal, discount_type, discount_value, total,
     valid_until, created_by
   ) values (
-    p_customer_name, p_customer_phone, p_customer_address, p_items,
+    p_customer_name, p_customer_phone, p_customer_tin, p_items,
     p_subtotal, 'none', 0, p_subtotal,
     now() + interval '7 days', 'customer'
   ) returning quotations.id into v_id;
