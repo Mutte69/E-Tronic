@@ -18,8 +18,9 @@ export default function ProductDetailOverlay({
 }) {
   const [mounted, setMounted] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-  const touchStartX = useRef<number | null>(null);
-  const touchDeltaX = useRef(0);
+  const dragStartX = useRef<number | null>(null);
+  const dragDeltaX = useRef(0);
+  const isDragging = useRef(false);
 
   useEffect(() => {
     setMounted(true);
@@ -51,23 +52,25 @@ export default function ProductDetailOverlay({
     setActiveIndex((i + gallery.length) % gallery.length);
   }
 
-  function handleTouchStart(e: React.TouchEvent) {
-    touchStartX.current = e.touches[0].clientX;
-    touchDeltaX.current = 0;
+  function handlePointerDown(e: React.PointerEvent) {
+    dragStartX.current = e.clientX;
+    dragDeltaX.current = 0;
+    isDragging.current = true;
   }
 
-  function handleTouchMove(e: React.TouchEvent) {
-    if (touchStartX.current == null) return;
-    touchDeltaX.current = e.touches[0].clientX - touchStartX.current;
+  function handlePointerMove(e: React.PointerEvent) {
+    if (!isDragging.current || dragStartX.current == null) return;
+    dragDeltaX.current = e.clientX - dragStartX.current;
   }
 
-  function handleTouchEnd() {
-    if (Math.abs(touchDeltaX.current) > 50) {
-      if (touchDeltaX.current < 0) goTo(activeIndex + 1);
+  function handlePointerUp() {
+    if (Math.abs(dragDeltaX.current) > 40) {
+      if (dragDeltaX.current < 0) goTo(activeIndex + 1);
       else goTo(activeIndex - 1);
     }
-    touchStartX.current = null;
-    touchDeltaX.current = 0;
+    isDragging.current = false;
+    dragStartX.current = null;
+    dragDeltaX.current = 0;
   }
 
   const view = (
@@ -91,10 +94,11 @@ export default function ProductDetailOverlay({
       >
         <div className="w-full md:w-1/2 shrink-0">
           <div
-            className="relative w-full h-[45vh] md:h-screen bg-surface-raised select-none"
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
+            className="relative w-full h-[45vh] md:h-screen bg-surface-raised select-none touch-pan-y"
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerLeave={handlePointerUp}
           >
             {activeUrl ? (
               <Image
