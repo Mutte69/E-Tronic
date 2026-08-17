@@ -231,7 +231,12 @@ drop policy if exists "Public can create quotations" on quotations;
 -- direct table policy) so pricing/discount/valid-until are always set
 -- server-side, and a customer can never read other people's quotations —
 -- the function returns just the row it created.
+-- Drop every signature this function has ever had, so re-running this
+-- file never leaves two overloaded versions behind (which breaks calls
+-- with "function name is not unique").
 drop function if exists public.create_customer_quotation(text, text, text, jsonb, numeric);
+drop function if exists public.create_customer_quotation(text, text, jsonb, numeric, text);
+drop function if exists public.create_customer_quotation(text, text, text, jsonb, numeric, text);
 
 create or replace function public.create_customer_quotation(
   p_customer_name text,
@@ -261,7 +266,7 @@ begin
 end;
 $$;
 
-grant execute on function public.create_customer_quotation to anon, authenticated;
+grant execute on function public.create_customer_quotation(text, text, jsonb, numeric, text) to anon, authenticated;
 
 do $$ begin
   alter table invoices add constraint invoices_quotation_id_fkey
