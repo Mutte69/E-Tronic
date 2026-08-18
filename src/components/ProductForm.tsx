@@ -27,7 +27,7 @@ export default function ProductForm({
   const [error, setError] = useState<string | null>(null);
 
   const [keepImages, setKeepImages] = useState<string[]>(product?.images ?? []);
-  const [extraPreviews, setExtraPreviews] = useState<string[]>([]);
+  const [pendingExtraFiles, setPendingExtraFiles] = useState<File[]>([]);
   const MAX_EXTRA = 4;
 
   function handleRawFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -71,19 +71,26 @@ export default function ProductForm({
 
   const needsCard = rawFile && !cardReady;
 
-  function handleExtraFilesChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? []);
-    const remaining = MAX_EXTRA - keepImages.length;
+  function syncExtraInput(files: File[]) {
+    const dt = new DataTransfer();
+    files.forEach((f) => dt.items.add(f));
+    if (extraInputRef.current) extraInputRef.current.files = dt.files;
+  }
 
-    if (files.length > remaining) {
-      const trimmed = files.slice(0, Math.max(0, remaining));
-      const dt = new DataTransfer();
-      trimmed.forEach((f) => dt.items.add(f));
-      if (extraInputRef.current) extraInputRef.current.files = dt.files;
-      setExtraPreviews(trimmed.map((f) => URL.createObjectURL(f)));
-    } else {
-      setExtraPreviews(files.map((f) => URL.createObjectURL(f)));
-    }
+  function handleExtraFilesChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const newlyPicked = Array.from(e.target.files ?? []);
+    const remaining = MAX_EXTRA - keepImages.length - pendingExtraFiles.length;
+    const accepted = newlyPicked.slice(0, Math.max(0, remaining));
+    const combined = [...pendingExtraFiles, ...accepted];
+
+    setPendingExtraFiles(combined);
+    syncExtraInput(combined);
+  }
+
+  function removePendingFile(index: number) {
+    const combined = pendingExtraFiles.filter((_, i) => i !== index);
+    setPendingExtraFiles(combined);
+    syncExtraInput(combined);
   }
 
   function removeKeptImage(url: string) {
@@ -243,7 +250,7 @@ export default function ProductForm({
 
         <input type="hidden" name="keep_images" value={JSON.stringify(keepImages)} />
 
-        {keepImages.length < MAX_EXTRA && (
+        {keepImages.length + pendingExtraFiles.length < MAX_EXTRA && (
           <>
             <input
               ref={extraInputRef}
@@ -254,23 +261,41 @@ export default function ProductForm({
               onChange={handleExtraFilesChange}
               className="w-full font-body text-sm text-muted file:mr-3 file:rounded-md file:border-0 file:bg-surface-raised file:text-paper file:text-xs file:font-medium file:px-3 file:py-2 file:border file:border-line"
             />
-            {extraPreviews.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {extraPreviews.map((url, i) => (
-                  <div
-                    key={i}
-                    className="relative w-20 h-20 rounded-md overflow-hidden border border-line"
-                  >
-                    <Image src={url} alt="" fill className="object-cover" />
-                  </div>
-                ))}
-              </div>
-            )}
             <p className="font-body text-[11px] text-muted mt-1">
-              These show in the customer's photo gallery when they view the
-              item — no branding needed on these, plain photos are fine.
+              Picking again adds more — it doesn't replace what you already
+              chose. These show in the customer's photo gallery when they
+              view the item; no branding needed, plain photos are fine.
             </p>
           </>
+        )}
+
+        {pendingExtraFiles.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {pendingExtraFiles.map((file, i) => (
+              <div
+                key={i}
+                className="relative w-20 h-20 rounded-md overflow-hidden border border-copper/50"
+              >
+                <Image
+                  src={URL.createObjectURL(file)}
+                  alt=""
+                  fill
+                  className="object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => removePendingFile(i)}
+                  className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-ink/80 text-paper text-[10px] flex items-center justify-center"
+                  aria-label="Remove photo"
+                >
+                  ✕
+                </button>
+                <span className="absolute bottom-0.5 left-0.5 font-mono text-[8px] uppercase tracking-wide bg-copper text-ink px-1 rounded-sm">
+                  New
+                </span>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 
